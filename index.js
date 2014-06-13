@@ -1,6 +1,6 @@
 var FILENAME = "nederlands1";
 var DOWNLOADS_DIR = "downloads/";
-var MAX_DOWNLOADS = 10;
+var MAX_DOWNLOADS = 30;
 
 var avconv = require('avconv')
   , fs = require('fs')
@@ -64,40 +64,62 @@ setInterval(function() {
 }, 1000 * 20); 
 
 
-var lastReplay = new Date, lastReplayFile = '';
-var replay = function(cb) {
-   if((new Date) - lastReplay < 20 * 1000) {
-      console.error("Last replay less than 20s, aborting");
-      return cb(null, lastReplayFile); 
-   }
-   lastReplay = new Date;
-   var outputfilename = 'videos/'+humanize.date('Y-m-d-H-i-s')+'.mp4';
-   var dir = DOWNLOADS_DIR;
-   var files = fs.readdirSync(dir);
+server.lastReplay = { time: new Date, filename: null };
+var replay = function(seconds, format, cb) {
+  if(((new Date).getTime() - server.lastReplay.time) < 20000) {
+    console.error("Last replay less than 20s ago, returning last replay file ",server.lastReplay.filename);
+    return cb(null, server.lastReplay.filename); 
+  }
+  server.lastReplay.time = new Date;
+  server.busy = true;
+  var outputfilename = 'videos/'+humanize.date('Y-m-d-H-i-s')+'.mp4';
+  var dir = DOWNLOADS_DIR;
+  var files = fs.readdirSync(dir);
 
-    files.sort(function(a, b) { return seq(a) - seq(b); });
+  files.sort(function(a, b) { return seq(a) - seq(b); });
 
-    var params = ['-y','-i'];
-    files = _.map(files, function(f) { return dir+f; });
-    var concat = 'concat:' + files.slice(1).join('|');
-    params.push(concat);
+  var params = ['-y','-i'];
+  files = _.map(files, function(f) { return dir+f; });
+  files = _.first(files, Math.round(seconds/2));
+  var concat = 'concat:' + files.slice(1).join('|');
+  params.push(concat);
 
-    params.push(outputfilename);
+  if(format == 'gif') {
+    outputfilename = outputfilename.replace('.mp4','.gif');
+    //-s qvga -vf format=rgb8,format=rgb24 -pix_fmt rgb24 -r 10
+    params.push('-s');
+    params.push('vga');
+    params.push('-vf');
+    params.push('format=rgb8,format=rgb24');
+    params.push('-pix_fmt');
+    params.push('rgb24');
+    params.push('-r');
+    params.push('10');
+  }
 
-    var stream = spawn('avconv', params);
-    stream.stdout.pipe(process.stdout);
-    stream.stderr.pipe(process.stderr);
+  params.push(outputfilename);
 
-    stream.on('exit', function(e) {
-      console.log("Video saved!",e);
-      lastReplayFile = outputfilename;
-      cb(null, outputfilename);
-    });
+  var stream = spawn('avconv', params);
+  stream.stdout.pipe(process.stdout);
+  stream.stderr.pipe(process.stderr);
+
+  stream.on('exit', function(e) {
+    console.log("Video saved!",e);
+    server.lastReplay.filename = outputfilename;
+    server.busy = false;
+    cb(null, outputfilename);
+  });
 
 };
 
 server.get('/replay', function(req, res) {
-  replay(function(err, filename) {
+  if(server.busy) {
+    return res.send("Sorry server busy");
+  }
+  var seconds = req.param('seconds',10);
+  var format = req.param('format', 'mp4');
+  console.log(humanize.date('Y-m-d H:i:s')+" /replay?seconds="+seconds+"&format="+format);
+  replay(seconds, format, function(err, filename) {
     res.redirect(filename);
   });
 });
