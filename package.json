@@ -24,6 +24,8 @@
   "dependencies": {
     "express": "^4.4.3",
     "CBuffer": "^0.1.4",
-    "avconv": "^2.0.0"
+    "avconv": "^2.0.0",
+    "underscore": "^1.6.0",
+    "humanize": "0.0.9"
   }
 }
