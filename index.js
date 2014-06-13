@@ -1,6 +1,6 @@
 var FILENAME = "nederlands1";
 var DOWNLOADS_DIR = "downloads/";
-var MAX_DOWNLOADS = 30;
+var MAX_DOWNLOADS = 10;
 
 var avconv = require('avconv')
   , fs = require('fs')
@@ -30,6 +30,8 @@ var startStreaming = function() {
   console.log("Starting streaming...");
 };
 
+var seq = function(a) { return parseInt(a.replace(FILENAME,''),10); };
+
 var cleanDownloads = function(max_downloads, cb) {
     cb = cb || function() {};
 
@@ -39,10 +41,7 @@ var cleanDownloads = function(max_downloads, cb) {
 
     if(files.length <= max_downloads) return cb(null);
 
-    files.sort(function(a, b) {
-                   return fs.statSync(dir + a).mtime.getTime() -
-                          fs.statSync(dir + b).mtime.getTime();
-               });
+    files.sort(function(a, b) { return seq(b) - seq(a); });
 
     for(var i= max_downloads; i < files.length; i++) {
       // console.log("Removing file "+dir+files[i]+ " modified "+(new Date(fs.statSync(dir+files[i]).mtime.getTime()).toString()));
@@ -52,11 +51,11 @@ var cleanDownloads = function(max_downloads, cb) {
 };
 
 // We start from a fresh directory
-// exec('killall avconv');
+exec('killall avconv');
 cleanDownloads(0);
 
 // We start streaming
-startStreaming();
+setTimeout(startStreaming, 200);
 
 // We only keep the latest segments
 setInterval(function() {
@@ -76,10 +75,7 @@ var replay = function(cb) {
    var dir = DOWNLOADS_DIR;
    var files = fs.readdirSync(dir);
 
-    var seq = function(a) { return parseInt(a.replace(FILENAME,''),10); };
-    files.sort(function(a, b) {
-                  return seq(a) - seq(b);
-               });
+    files.sort(function(a, b) { return seq(a) - seq(b); });
 
     var params = ['-y','-i'];
     files = _.map(files, function(f) { return dir+f; });
