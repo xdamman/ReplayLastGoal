@@ -20,6 +20,9 @@ var logs = {
 }
 
 var server = express();
+
+require('./config/express')(server);
+
 var streamurl = "http://l2cm2566367a6a00539a5798000000.484079e0c53754dd.smoote2c.npostreaming.nl/d/live/npo/tvlive/ned1/ned1.isml/ned1-audio%3D128000-video%3D1300000.m3u8";
 
 var startStreaming = function() { 
@@ -52,15 +55,15 @@ var cleanDownloads = function(max_downloads, cb) {
 };
 
 // We start from a fresh directory
-exec('killall avconv');
-cleanDownloads(0);
+exec('killall avconv', function(err, stdout, stderr) {
+  cleanDownloads(0);
+  // We start streaming
+  setTimeout(startStreaming, 200);
+});
 
-// We start streaming
-setTimeout(startStreaming, 200);
 
 // We only keep the latest segments
 setInterval(function() {
-  console.log("Removing old segments (keeping the "+MAX_DOWNLOADS+" latest)");
   cleanDownloads(MAX_DOWNLOADS);
 }, 1000 * 20); 
 
@@ -125,7 +128,14 @@ server.get(/\/latest(\.mp4)?/, function(req, res) {
   res.redirect(server.lastRecording.filename);
 });
 
+server.get('/live', function(req, res) {
+  res.render('live.hbs', {
+    videostream: 'downloads/'+FILENAME+'.m3u8'// streamurl
+  });
+});
+
 server.use('/videos', express.static('videos/'));
+server.use('/downloads', express.static('downloads/'));
 
 console.log("Server listening on port 1212");
 server.listen(1212);
