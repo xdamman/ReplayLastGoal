@@ -117,12 +117,12 @@ server.get('/record', function(req, res) {
   res.send("Starting recording. Your file will be soon available on /latest.mp4 and /latest.gif");
 });
 
-server.get(/\/latest(\.mp4)?/, function(req, res) {
-  res.redirect(server.lastRecording.filename);
-});
-
 server.get('/latest.gif', function(req, res) {
   res.redirect(server.lastRecording.filename.replace('.mp4','.gif'));
+});
+
+server.get(/\/latest(\.mp4)?/, function(req, res) {
+  res.redirect(server.lastRecording.filename);
 });
 
 server.use('/videos', express.static('videos/'));
