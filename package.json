@@ -27,5 +27,8 @@
     "avconv": "^2.0.0",
     "underscore": "^1.6.0",
     "humanize": "0.0.9"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1"
   }
 }

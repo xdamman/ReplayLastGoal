@@ -1,6 +1,6 @@
 var FILENAME = "nederlands1";
 var DOWNLOADS_DIR = "downloads/";
-var MAX_DOWNLOADS = 30;
+var MAX_DOWNLOADS = 60;
 
 var avconv = require('avconv')
   , fs = require('fs')
@@ -9,6 +9,7 @@ var avconv = require('avconv')
   , exec = require('child_process').exec
   , _ = require('underscore')
   , humanize = require('humanize')
+  , utils = require('./lib/utils')
   ;
 
 var logs = {
@@ -64,13 +65,15 @@ setInterval(function() {
 }, 1000 * 20); 
 
 
-server.lastReplay = { time: new Date, filename: null };
-var replay = function(seconds, format, cb) {
-  if(((new Date).getTime() - server.lastReplay.time) < 20000) {
-    console.error("Last replay less than 20s ago, returning last replay file ",server.lastReplay.filename);
-    return cb(null, server.lastReplay.filename); 
+server.lastRecording = { time: new Date, filename: null };
+var record = function(seconds, cb) {
+  cb = cb || function() {};
+
+  if(((new Date).getTime() - server.lastRecording.time) < 20000) {
+    console.error("Last recording less than 20s ago, returning last recording file ",server.lastRecording.filename);
+    return cb(null, server.lastRecording.filename); 
   }
-  server.lastReplay.time = new Date;
+  server.lastRecording.time = new Date;
   server.busy = true;
   var outputfilename = 'videos/'+humanize.date('Y-m-d-H-i-s')+'.mp4';
   var dir = DOWNLOADS_DIR;
@@ -84,19 +87,6 @@ var replay = function(seconds, format, cb) {
   var concat = 'concat:' + files.slice(1).join('|');
   params.push(concat);
 
-  if(format == 'gif') {
-    outputfilename = outputfilename.replace('.mp4','.gif');
-    //-s qvga -vf format=rgb8,format=rgb24 -pix_fmt rgb24 -r 10
-    params.push('-s');
-    params.push('vga');
-    params.push('-vf');
-    params.push('format=rgb8,format=rgb24');
-    params.push('-pix_fmt');
-    params.push('rgb24');
-    params.push('-r');
-    params.push('10');
-  }
-
   params.push(outputfilename);
 
   var stream = spawn('avconv', params);
@@ -105,69 +95,34 @@ var replay = function(seconds, format, cb) {
 
   stream.on('exit', function(e) {
     console.log("Video saved!",e);
-    server.lastReplay.filename = outputfilename;
+    server.lastRecording.filename = outputfilename;
     server.busy = false;
     cb(null, outputfilename);
+    utils.mp4toGIF(outputfilename);
   });
 
 };
 
-server.get('/replay', function(req, res) {
+
+/* *************
+ * Server routes
+ */
+server.get('/record', function(req, res) {
   if(server.busy) {
-    return res.send("Sorry server busy");
+    return res.send("Sorry server already busy recording");
   }
-  var seconds = req.param('seconds',10);
-  var format = req.param('format', 'mp4');
-  console.log(humanize.date('Y-m-d H:i:s')+" /replay?seconds="+seconds+"&format="+format);
-  replay(seconds, format, function(err, filename) {
-    res.redirect(filename);
-  });
+  var seconds = req.param('seconds',15);
+  console.log(humanize.date('Y-m-d H:i:s')+" /record?seconds="+seconds);
+  record(seconds);
+  res.send("Starting recording. Your file will be soon available on /latest.mp4 and /latest.gif");
 });
 
-
-var buffer2gif = function(cb) {
-  var gif = 'gif/output.gif';
-  var params = ['-t',4,'-y','-f','avi','-i','pipe:0','-s','qvga','-vf','format=rgb8,format=rgb24','-pix_fmt','rgb24','-r',10,'-f','gif','pipe:1'];
-
-  var file = fs.createWriteStream(gif);
-  var stream = avconv(params);
-  var buf = Buffer.concat(buffer.toArray());
-  
-  stream.on('message', function(m) {
-    console.log(m);
-  });
-
-  stream.pipe(file);
-
-  stream.on('exit', function(e) {
-    console.log("Exit: ", e);
-  });
-  stream.on('error', function(e) {
-    console.error("oops: ", e);
-  });
-  stream.on('end', function() {
-    console.log("Ending");
-    cb(null,gif);
-  });
-  stream.end(buf, function () {
-    console.log('cb to stream.write', arguments);
-  });
-  // stream.push(null);
-};
-
-
-server.get('/buffer', function(req, res) {
-  buffer2gif(function(err, filename) {
-    console.log("Sending " + filename);
-    res.sendfile(filename);
-  });
+server.get(/\/latest(\.mp4)?/, function(req, res) {
+  res.redirect(server.lastRecording.filename);
 });
 
-
-server.get('/stream', function(req, res) {
-  streamurl2gif(streamurl, function(err, file) {
-    res.sendfile(file);
-  });
+server.get('/latest.gif', function(req, res) {
+  res.redirect(server.lastRecording.filename.replace('.mp4','.gif'));
 });
 
 server.use('/videos', express.static('videos/'));
