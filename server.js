@@ -12,7 +12,6 @@ var avconv = require('avconv')
   , _ = require('underscore')
   , humanize = require('humanize')
   , utils = require('./lib/utils')
-  , twitter = require('twitter')
   , googl = require('goo.gl')
   ;
 
@@ -26,20 +25,6 @@ var logs = {
 var server = express();
 
 require('./config/express')(server);
-
-var twit = new twitter(require('./config/twitter'));
-
-var notify = function(filename) {
-  googl.shorten("http://95.85.37.43:1212/"+filename)
-    .then(function (shortUrl) {
-      twit.updateStatus("@xdamman Goal! "+shortUrl, function(data) {
-        console.log("notify> ", data);
-      });
-    })
-    .catch(function (err) {
-        console.error(err.message);
-    });
-};
 
 server.lastRecording = { time: new Date, filename: null };
 var record = function(start, duration, cb) {
@@ -91,8 +76,8 @@ var record = function(start, duration, cb) {
     console.log("Video saved!",e);
     server.lastRecording.filename = outputfilename;
     server.busy = false;
-    notify(outputfilename);
-    cb(null, outputfilename);
+    var url = "http://95.85.37.43:1212/"+outputfilename;
+    cb(null, url);
   });
 };
 
@@ -107,8 +92,9 @@ server.get('/record', function(req, res) {
   var start = req.param('start', 0);
   var duration = req.param('duration', 30);
   console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration);
-  record(start, duration);
-  res.send("Starting recording. Your file will be soon available on /latest.mp4 and /latest.gif");
+  record(start, duration, function(err, url) {
+    res.send(url);
+  });
 });
 
 server.get('/latest.gif', function(req, res) {
