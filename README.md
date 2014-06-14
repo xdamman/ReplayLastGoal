@@ -1,4 +1,3 @@
-worldcupgif
-===========
+# ReplayLastGoal
 
-Automatically create an animated gif with the latest goal at the world cup
+Automatically creates and tweet a video with the latest goal at the world cup
