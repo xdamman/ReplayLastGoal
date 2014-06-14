@@ -1,6 +1,6 @@
 {
   "name": "worldcupgif",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Automatically create an animated gif with the latest goal at the world cup",
   "main": "index.js",
   "scripts": {
