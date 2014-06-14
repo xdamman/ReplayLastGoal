@@ -12,6 +12,8 @@ twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {
     console.log(humanize.date("Y-m-d H:i:s")+" Connected");
     stream.on('data', function(data) {
       if(!data.text) return;       
+      if(data.user.screen_name != TWITTER_USERNAME) return;
+      console.log("DATA: ", data);
       request(RECORD_URL);
     });
 
