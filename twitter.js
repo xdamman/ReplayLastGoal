@@ -12,7 +12,7 @@ twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {
     console.log(humanize.date("Y-m-d H:i:s")+" Connected");
     stream.on('data', function(data) {
       if(!data.text) return;       
-      request(RECORDURL);
+      request(RECORD_URL);
     });
 
     stream.on('error', function(error) {
