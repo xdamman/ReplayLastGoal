@@ -12,6 +12,7 @@ var avconv = require('avconv')
   , _ = require('underscore')
   , humanize = require('humanize')
   , utils = require('./lib/utils')
+  , twitter = require('twitter')
   ;
 
 var logs = {
@@ -25,6 +26,13 @@ var server = express();
 
 require('./config/express')(server);
 
+var twit = new twitter(require('./config/twitter'));
+
+var notify = function(filename) {
+  twit.updateStatus("@xdamman Goal! http://95.85.37.43:1212/"+filename, function(data) {
+    console.log("notify> ", data);
+  });
+};
 
 server.lastRecording = { time: new Date, filename: null };
 var record = function(start, duration, cb) {
@@ -76,6 +84,7 @@ var record = function(start, duration, cb) {
     console.log("Video saved!",e);
     server.lastRecording.filename = outputfilename;
     server.busy = false;
+    notify(outputfilename);
     cb(null, outputfilename);
   });
 };
