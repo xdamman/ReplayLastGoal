@@ -4,7 +4,10 @@
   "description": "Automatically create an animated gif with the latest goal at the world cup",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/pm2/bin/pm2 start processes.json",
+    "stop": "./node_modules/pm2/bin/pm2 stop all",
+    "reload": "./node_modules/pm2/bin/pm2 reload server"
   },
   "repository": {
     "type": "git",
@@ -27,7 +30,10 @@
     "avconv": "^2.0.0",
     "underscore": "^1.6.0",
     "humanize": "0.0.9",
-    "express3-handlebars": "^0.5.0"
+    "express3-handlebars": "^0.5.0",
+    "pm2": "^0.8.15",
+    "twitter": "^0.2.9",
+    "request": "^2.36.0"
   },
   "devDependencies": {
     "chai": "^1.9.1"

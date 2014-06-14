@@ -2,6 +2,8 @@ var FILENAME = "nederlands1";
 var DOWNLOADS_DIR = "downloads/";
 var MAX_DOWNLOADS = 60;
 
+var streamurl = "http://l2cm2566367a6a00539a5798000000.484079e0c53754dd.smoote2c.npostreaming.nl/d/live/npo/tvlive/ned1/ned1.isml/ned1-audio%3D128000-video%3D1300000.m3u8";
+
 var avconv = require('avconv')
   , fs = require('fs')
   , express = require('express')
@@ -23,54 +25,23 @@ var server = express();
 
 require('./config/express')(server);
 
-var streamurl = "http://l2cm2566367a6a00539a5798000000.484079e0c53754dd.smoote2c.npostreaming.nl/d/live/npo/tvlive/ned1/ned1.isml/ned1-audio%3D128000-video%3D1300000.m3u8";
-
-var startStreaming = function() { 
-  var params = ['-i',streamurl,'-c','copy',DOWNLOADS_DIR+FILENAME+'.m3u8'];
-  var stream = spawn('avconv', params);
-  stream.stdout.pipe(logs.avconv.out);
-  stream.stderr.pipe(logs.avconv.err);
-
-  console.log("Starting streaming...");
-};
-
-var seq = function(a) { return parseInt(a.replace(FILENAME,''),10); };
-
-var cleanDownloads = function(max_downloads, cb) {
-    cb = cb || function() {};
-
-    var max_downloads = (typeof max_downloads != 'undefined') ? max_downloads : MAX_DOWNLOADS;
-    var dir = DOWNLOADS_DIR;
-    var files = fs.readdirSync(dir);
-
-    if(files.length <= max_downloads) return cb(null);
-
-    files.sort(function(a, b) { return seq(b) - seq(a); });
-
-    for(var i= max_downloads; i < files.length; i++) {
-      // console.log("Removing file "+dir+files[i]+ " modified "+(new Date(fs.statSync(dir+files[i]).mtime.getTime()).toString()));
-      fs.unlink(dir+files[i]);
-    }
-    cb(null);
-};
-
-// We start from a fresh directory
-exec('killall avconv', function(err, stdout, stderr) {
-  cleanDownloads(0);
-  // We start streaming
-  setTimeout(startStreaming, 200);
-});
-
-
-// We only keep the latest segments
-setInterval(function() {
-  cleanDownloads(MAX_DOWNLOADS);
-}, 1000 * 20); 
-
 
 server.lastRecording = { time: new Date, filename: null };
-var record = function(seconds, cb) {
+var record = function(start, duration, cb) {
   cb = cb || function() {};
+
+  var start = parseInt(start,10);
+  var duration = parseInt(duration, 10);
+  // If we request 25 seconds starting 10 seconds ago 
+  // we wait 15 seconds and re-run the call asking for
+  // 25 seconds starting 25 seconds ago
+  if(start < 0 && (start + duration) > 0) {
+    console.log(">>> Waiting "+(start+duration)+" seconds");
+    setTimeout(function() {
+      record(start - (start+duration), duration, cb);
+    }, 1000 * (start+duration));
+    return;
+  }
 
   if(((new Date).getTime() - server.lastRecording.time) < 20000) {
     console.error("Last recording less than 20s ago, returning last recording file ",server.lastRecording.filename);
@@ -80,15 +51,20 @@ var record = function(seconds, cb) {
   server.busy = true;
   var outputfilename = 'videos/'+humanize.date('Y-m-d-H-i-s')+'.mp4';
   var dir = DOWNLOADS_DIR;
-  var files = fs.readdirSync(dir);
 
-  files.sort(function(a, b) { return seq(a) - seq(b); });
+  var params = ['-t',duration,'-y','-i'];
 
-  var params = ['-y','-i'];
-  files = _.map(files, function(f) { return dir+f; });
-  files = _.first(files, Math.round(seconds/2));
-  var concat = 'concat:' + files.slice(1).join('|');
-  params.push(concat);
+  if(start < 0) {
+    var files = fs.readdirSync(dir);
+    files.sort(function(a, b) { return utils.seq(a) - utils.seq(b); });
+    files = _.map(files, function(f) { return dir+f; });
+    files = _.last(files, Math.round(start*-1/2+1));
+    var concat = 'concat:' + files.slice(1).join('|');
+    params.push(concat);
+  }
+  else {
+    params.push(streamurl);
+  }
 
   params.push(outputfilename);
 
@@ -101,9 +77,7 @@ var record = function(seconds, cb) {
     server.lastRecording.filename = outputfilename;
     server.busy = false;
     cb(null, outputfilename);
-    utils.mp4toGIF(outputfilename);
   });
-
 };
 
 
@@ -114,9 +88,10 @@ server.get('/record', function(req, res) {
   if(server.busy) {
     return res.send("Sorry server already busy recording");
   }
-  var seconds = req.param('seconds',15);
-  console.log(humanize.date('Y-m-d H:i:s')+" /record?seconds="+seconds);
-  record(seconds);
+  var start = req.param('start', 0);
+  var duration = req.param('duration', 30);
+  console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration);
+  record(start, duration);
   res.send("Starting recording. Your file will be soon available on /latest.mp4 and /latest.gif");
 });
 
@@ -130,7 +105,8 @@ server.get(/\/latest(\.mp4)?/, function(req, res) {
 
 server.get('/live', function(req, res) {
   res.render('live.hbs', {
-    videostream: 'downloads/'+FILENAME+'.m3u8'// streamurl
+    //videostream: 'downloads/'+FILENAME+'.m3u8'// streamurl
+    videostream: streamurl 
   });
 });
 

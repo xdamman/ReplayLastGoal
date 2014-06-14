@@ -1,0 +1,26 @@
+[{
+  "name": "stream",
+  "script": "videostream.js",
+  "watch": false,
+  "instances": 1,
+  "out_file": "logs/streaming.out.log",
+  "err_file": "logs/streaming.err.log",
+  "exec_mode":"fork_mode"
+},
+{
+  "name": "server",
+  "script": "server.js",
+  "instances": 1,
+  "out_file": "logs/server.out.log",
+  "err_file": "logs/server.err.log",
+  "exec_mode":"fork_mode"
+},
+{
+  "name": "twitter",
+  "script": "twitter.js",
+  "instances": 1,
+  "out_file": "logs/twitter.out.log",
+  "err_file": "logs/twitter.err.log",
+  "exec_mode":"fork_mode"
+} 
+]
