@@ -1,5 +1,5 @@
 var RECORD_URL = "http://localhost:1212/record?start=-10&duration=35";
-var TWITTER_USERNAME = "goalflash";
+var TWITTER_USERNAME = "GoalFlash";
 
 var twitter = require('twitter')
   , humanize = require('humanize')
@@ -11,9 +11,9 @@ console.log(humanize.date("Y-m-d H:i:s")+" Connecting to the Twitter Stream for 
 twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {
     console.log(humanize.date("Y-m-d H:i:s")+" Connected");
     stream.on('data', function(data) {
+      console.log(humanize.date("Y-m-d H:i:s")+" DATA: ", data);
       if(!data.text) return;       
       if(data.user.screen_name != TWITTER_USERNAME) return;
-      console.log("DATA: ", data);
       request(RECORD_URL);
     });
 
