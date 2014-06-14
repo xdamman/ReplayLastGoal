@@ -1,17 +1,17 @@
 {
-  "name": "worldcupgif",
+  "name": "ReplayLastGoal",
   "version": "0.0.4",
-  "description": "Automatically create an animated gif with the latest goal at the world cup",
+  "description": "Automatically creates and tweet a video with the latest goal at the world cup",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "./node_modules/pm2/bin/pm2 start processes.json",
     "stop": "./node_modules/pm2/bin/pm2 stop all",
-    "reload": "./node_modules/pm2/bin/pm2 reload all"
+    "reload": "./node_modules/pm2/bin/pm2 reload server && ./node_modules/pm2/bin/pm2 reload twitter"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/xdamman/worldcupgif.git"
+    "url": "git://github.com/xdamman/ReplayLastGoal.git"
   },
   "keywords": [
     "worldcup",
@@ -21,9 +21,9 @@
   "author": "Xavier Damman (@xdamman)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/xdamman/worldcupgif/issues"
+    "url": "https://github.com/xdamman/ReplayLastGoal/issues"
   },
-  "homepage": "https://github.com/xdamman/worldcupgif",
+  "homepage": "https://github.com/xdamman/ReplayLastGoal",
   "dependencies": {
     "express": "^4.4.3",
     "CBuffer": "^0.1.4",

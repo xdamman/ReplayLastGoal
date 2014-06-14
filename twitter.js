@@ -43,7 +43,8 @@ twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {
       lastTweet = data.text;
       request(RECORD_URL, function(err, res, body) {
         console.log("body: ", body);
-        notify(body);
+        if(body.match(/http/))
+          notify(body);
       });
     });
 

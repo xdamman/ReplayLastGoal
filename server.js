@@ -107,8 +107,7 @@ server.get(/\/latest(\.mp4)?/, function(req, res) {
 
 server.get('/live', function(req, res) {
   res.render('live.hbs', {
-    //videostream: 'downloads/'+FILENAME+'.m3u8'// streamurl
-    videostream: streamurl 
+    videostream: 'downloads/'+FILENAME+'.m3u8'// streamurl
   });
 });
 
