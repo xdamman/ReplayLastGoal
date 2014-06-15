@@ -31,7 +31,7 @@ server.set('port', port);
 
 require('./config/express')(server);
 
-server.lastRecording = { time: new Date, filename: null };
+server.lastRecording = { time: new Date, filename: '' };
 var record = function(start, duration, cb) {
   cb = cb || function() {};
 
@@ -107,14 +107,18 @@ server.get('/latest.gif', function(req, res) {
   res.redirect(server.lastRecording.filename.replace('.mp4','.gif'));
 });
 
-server.get(/\/latest(\.mp4)?/, function(req, res) {
-  res.redirect(server.lastRecording.filename);
+server.get('/', function(req, res) {
+  res.render('home', { title: "@ReplayLastGoal" });
+});
+
+server.get('/latest', function(req, res) {
+  res.redirect("/video?v="+server.lastRecording.filename.replace('.mp4',''));
 });
 
 server.get('/video', function(req, res, next) {
   var v = req.param('v');
   if(!v || !v.match(/201[0-9]\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}/))
-    return next(new Error("Invalid video"));
+    return res.send(400,"Invalid video id");
 
   res.render('video.hbs', {title: "View video" });
 });

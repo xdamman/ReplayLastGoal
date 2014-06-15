@@ -1,4 +1,4 @@
-var RECORD_URL = "http://localhost:1212/record?start=-4&duration=16";
+var RECORD_URL = "http://localhost/record?start=-4&duration=16";
 var TWITTER_USERNAME = "GoalFlash";
 
 var twitter = require('twitter')
