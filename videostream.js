@@ -24,7 +24,10 @@ var startStreaming = function() {
   var stream = spawn('avconv', params);
   stream.stdout.pipe(logs.avconv.out);
   stream.stderr.pipe(logs.avconv.err);
-
+  stream.on('exit', function(code) {
+    console.log(humanize.date("Y-m-d H:i:s")+" Stream ended (see error log in logs/avconv.err.log), exiting");
+    process.exit(code);
+  });
   console.log(humanize.date("Y-m-d H:i:s")+" Starting streaming...");
 };
 
