@@ -14,7 +14,11 @@
   "out_file": "logs/server.out.log",
   "error_file": "logs/server.err.log",
   "exec_mode":"cluster",
-  "port": 80
+  "port": 80,
+  "env": {
+    "NODE_ENV": "production",
+    "NODE_PORT": 80
+  }
 },
 {
   "name": "twitter",
