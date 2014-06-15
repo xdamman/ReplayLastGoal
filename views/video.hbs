@@ -14,9 +14,9 @@
   <script>
     var timestamp_string = window.location.search.substr(3);
     var n = timestamp_string.match(/[0-9]+/g);
-    var timestamp = new Date(n[0]+"-"+n[1]+"-"+n[2]+" "+n[3]+":"+n[4]+":"+n[5]);
+    var timestamp = new Date(Date.UTC(n[0],parseInt(n[1])-1,n[2],n[3],n[4],n[5]));
     var el = document.querySelector('#expiration span');
-    var diff = ((new Date).getTime() - timestamp.getTime())/1000;
+    var diff = Math.round(((new Date).getTime() - timestamp.getTime())/1000);
     var diffMinutes = Math.round(diff / 60);
     var expiration = Math.min(60, 60 - diffMinutes);
     if(expiration > 0) {
