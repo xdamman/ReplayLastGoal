@@ -6,7 +6,7 @@ var twitter = require('twitter')
   , googl = require('goo.gl')
   , request = require('request');
 
-var twit = new twitter(require('./config/twitter'));
+var twit = new twitter(require('./settings.json').twitter);
 
 var notify = function(url) {
   var text = lastTweet.replace(/http.*/i,'').replace(/^RT @[a-zA-Z]{1,15}:? ?/i,'').replace(/ $/,'');
@@ -21,7 +21,7 @@ var notify = function(url) {
     });
 };
 
-var lastTweet = 'RT @GoalFlash: Colombia *3-0 Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup';
+var lastTweet = '';
 
 /* For testing: 
 setTimeout(function() {

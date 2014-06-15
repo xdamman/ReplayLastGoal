@@ -2,7 +2,7 @@ var FILENAME = "nederlands1";
 var DOWNLOADS_DIR = "downloads/";
 var MAX_DOWNLOADS = 60;
 
-var streamurl = "http://l2cm2566367a6a00539a5798000000.484079e0c53754dd.smoote2c.npostreaming.nl/d/live/npo/tvlive/ned1/ned1.isml/ned1-audio%3D128000-video%3D1300000.m3u8";
+var streamurl = require('./settings.json').videostream;
 
 var avconv = require('avconv')
   , fs = require('fs')
