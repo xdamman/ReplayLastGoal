@@ -10,10 +10,11 @@
 {
   "name": "server",
   "script": "server.js",
-  "instances": 1,
+  "instances": 2,
   "out_file": "logs/server.out.log",
   "error_file": "logs/server.err.log",
-  "exec_mode":"cluster",
+  "merge_logs" : "true",
+  "exec_mode":"cluster_mode",
   "port": 80,
   "env": {
     "NODE_ENV": "production",
