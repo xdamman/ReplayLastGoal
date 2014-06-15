@@ -2,11 +2,16 @@
 
 Automatically create and tweet a video with the latest goal at the world cup.
 
+*Notice: It is your responsiblity to make sure that you stay within the limits of "Fair Use". Laws might be different in your country. The author and contributors of this project decline all responsibility.*
+*For reference: Copyright Disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for "fair use" for purposes such as criticism, comment, news reporting, teaching, scholarship, and research. Fair use is a use permitted by copyright statute that might otherwise be infringing. Non-profit, educational or personal use tips the balance in favor of fair use.*
+
+## Try it!
+
+Just follow [@ReplayLastGoal](https://twitter.com/ReplayLastGoal) on Twitter.
+
 ## How does it work?
 
-It connects to a video live stream (that you need to provide) and keeps a buffer of about one minute worth of video. When a given twitter account (by default [@GoalFlash](https://twitter.com/GoalFlash)) tweets, it uses the buffer to generate a video of the goal and then tweet it. Videos are saved in the `videos/` directory.
-
-*This is for personal use only. Please make sure that you get a legal live video stream and that you respect its terms of service.*
+It connects to a video live stream (that you need to provide) and keeps a buffer of about one minute worth of video. When a given twitter account tweets (by default [@GoalFlash](https://twitter.com/GoalFlash)), it uses the buffer to generate a video of the goal and then tweets it. Videos are saved in the `videos/` directory.
 
 ## Requirements
 

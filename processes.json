@@ -13,7 +13,8 @@
   "instances": 1,
   "out_file": "logs/server.out.log",
   "error_file": "logs/server.err.log",
-  "exec_mode":"fork_mode"
+  "exec_mode":"cluster",
+  "port": 80
 },
 {
   "name": "twitter",

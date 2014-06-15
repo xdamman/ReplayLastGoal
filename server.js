@@ -1,7 +1,8 @@
 var FILENAME = "livestream";
 var BUFFER_DIR = "buffer/";
 
-var streamurl = require('./settings.json').videostream;
+var settings = require('./settings.json');
+var streamurl = settings.videostream;
 
 var avconv = require('avconv')
   , fs = require('fs')
@@ -24,6 +25,8 @@ var logs = {
 }
 
 var server = express();
+var port = process.env.PORT || process.env.NODE_PORT || 1212;
+server.set('port', port);
 
 require('./config/express')(server);
 
@@ -77,7 +80,7 @@ var record = function(start, duration, cb) {
     console.log("Video saved!",e);
     server.lastRecording.filename = outputfilename;
     server.busy = false;
-    var url = "http://95.85.37.43:1212/"+outputfilename;
+    var url = settings.base_url+"/"+outputfilename;
     cb(null, url);
   });
 };
@@ -108,12 +111,12 @@ server.get(/\/latest(\.mp4)?/, function(req, res) {
 
 server.get('/live', function(req, res) {
   res.render('live.hbs', {
-    videostream: 'downloads/'+FILENAME+'.m3u8'// streamurl
+    videostream: streamurl 
   });
 });
 
 server.use('/videos', express.static('videos/'));
-server.use('/downloads', express.static('downloads/'));
+server.use('/status', require('./lib/status'));
 
-console.log("Server listening on port 1212");
-server.listen(1212);
+console.log("Server listening on port "+port);
+server.listen(port);
