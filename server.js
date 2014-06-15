@@ -1,6 +1,5 @@
-var FILENAME = "nederlands1";
-var DOWNLOADS_DIR = "downloads/";
-var MAX_DOWNLOADS = 60;
+var FILENAME = "livestream";
+var BUFFER_DIR = "buffer/";
 
 var streamurl = require('./settings.json').videostream;
 
@@ -14,6 +13,8 @@ var avconv = require('avconv')
   , utils = require('./lib/utils')
   , googl = require('goo.gl')
   ;
+
+utils.ensureDirectoryExists('videos');
 
 var logs = {
   avconv: {
@@ -50,7 +51,7 @@ var record = function(start, duration, cb) {
   server.lastRecording.time = new Date;
   server.busy = true;
   var outputfilename = 'videos/'+humanize.date('Y-m-d-H-i-s')+'.mp4';
-  var dir = DOWNLOADS_DIR;
+  var dir = BUFFER_DIR;
 
   var params = ['-t',duration,'-y','-i'];
 

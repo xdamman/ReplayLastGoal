@@ -1,10 +1,10 @@
 # ReplayLastGoal
 
-Automatically create and tweet a video with the latest goal at the world cup
+Automatically create and tweet a video with the latest goal at the world cup.
 
 ## How does it work?
 
-It connects to a video live stream and keeps a buffer of about one minute worth of video. When a given twitter account (by default @GoalFlash) tweets, it uses the buffer to generate a video of the goal and then tweet it.
+It connects to a video live stream (that you need to provide) and keeps a buffer of about one minute worth of video. When a given twitter account (by default [@GoalFlash](https://twitter.com/GoalFlash)) tweets, it uses the buffer to generate a video of the goal and then tweet it. Videos are saved in the `videos/` directory.
 
 *This is for personal use only. Please make sure that you get a legal live video stream and that you respect its terms of service.*
 
@@ -12,7 +12,7 @@ It connects to a video live stream and keeps a buffer of about one minute worth 
 
 ## A live video stream
 
-There are a few public television channels in Europe who are live streaming the world cup. The only caveat is that your server needs to be in that country, which is not too complicated to do with the cloud.
+There are a few public television channels in Europe who are live streaming the world cup. The only caveat is that your server needs to be in that country (but it's not too complicated to work around it using the cloud.)
 
 Live streaming works either with Flash which is hard to reverse engineer or with HTML5 for mobile devices. So open the web page with the live stream with Safari and change your user agent to the iPad and you will be able to get the HTML5 version of the live stream. Then you can inspect network traffic to identify the URL of the live stream. It should end with the extension `.m3u8`. Use that URL in `settings.json`.
 

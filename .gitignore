@@ -1,6 +1,6 @@
 settings.json
-downloads
-videos
+buffer/
+videos/
 
 # Logs
 logs
