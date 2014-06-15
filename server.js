@@ -13,6 +13,7 @@ var avconv = require('avconv')
   , humanize = require('humanize')
   , utils = require('./lib/utils')
   , googl = require('goo.gl')
+  , mw = require('./lib/middlewares')
   ;
 
 utils.ensureDirectoryExists('videos');
@@ -80,8 +81,7 @@ var record = function(start, duration, cb) {
     console.log("Video saved!",e);
     server.lastRecording.filename = outputfilename;
     server.busy = false;
-    var url = settings.base_url+"/"+outputfilename;
-    cb(null, url);
+    cb(null, outputfilename);
   });
 };
 
@@ -89,14 +89,16 @@ var record = function(start, duration, cb) {
 /* *************
  * Server routes
  */
-server.get('/record', function(req, res) {
+server.get('/record', mw.localhost, function(req, res) {
   if(server.busy) {
     return res.send("Sorry server already busy recording");
   }
   var start = req.param('start', 0);
   var duration = req.param('duration', 30);
   console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration);
-  record(start, duration, function(err, url) {
+  record(start, duration, function(err, videofilename) {
+    if(err || !videofilename) return res.send(500, "No video filename returned");
+    var url = settings.base_url+"/video?v="+videofilename.replace('videos/','').replace('.mp4','');
     res.send(url);
   });
 });
@@ -107,6 +109,14 @@ server.get('/latest.gif', function(req, res) {
 
 server.get(/\/latest(\.mp4)?/, function(req, res) {
   res.redirect(server.lastRecording.filename);
+});
+
+server.get('/video', function(req, res, next) {
+  var v = req.param('v');
+  if(!v || !v.match(/201[0-9]\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}/))
+    return next(new Error("Invalid video"));
+
+  res.render('video.hbs', {title: "View video" });
 });
 
 server.get('/live', function(req, res) {
