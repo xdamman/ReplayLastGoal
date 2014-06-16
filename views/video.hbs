@@ -1,4 +1,4 @@
-<video src="" width="100%" class="hidden" controls></video>
+<video src="" width="100%" class="hidden" type="video/mp4" controls autoplay></video>
 
 <div id="content">
   <div id="source" class="row hidden">
@@ -12,6 +12,7 @@
   </div>
 
   <script>
+    var attempts = 0;
     var timestamp_string = window.location.search.substr(3);
     var n = timestamp_string.match(/[0-9]+/g);
     var timestamp = new Date(Date.UTC(n[0],parseInt(n[1])-1,n[2],n[3],n[4],n[5]));
@@ -22,6 +23,18 @@
     if(expiration > 0) {
       var videoEl = document.querySelector("video");
       videoEl.src = "/videos/" + timestamp_string + ".mp4";
+
+      // If the video is not fully read to load just yet, we try again
+      videoEl.addEventListener("error", function(e) {
+        if(attempts < 4 && e.srcElement.error.code == 4) {
+          attempts++;
+          setTimeout(function() {
+            videoEl.src = "";
+            // console.log("Retrying to load the video " + "/videos/" + timestamp_string + ".mp4" + " - attempt "+attempts+"/4");
+            videoEl.src = "/videos/" + timestamp_string + ".mp4";
+          }, 1000);
+        }
+      });
       el.textContent = "This video will expire in " + expiration + " minutes";
       document.onreadystatechange = function () {
         if (document.readyState == "interactive") {
