@@ -31,7 +31,11 @@ On Ubuntu, it's a pain. [Those instructions](https://gist.github.com/xdamman/e33
 
     git clone https://github.com/xdamman/ReplayLastGoal.git
     npm install
-    vim settings.json // edit this file with your parameters
+
+Edit `settings.json` and save it as `settings.development.json` (or `settings.production.json` for production environment as set by the `NODE_ENV` variable.)
+
+You are now ready to start the application:
+
     npm start
 
 
