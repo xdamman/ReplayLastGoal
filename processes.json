@@ -5,7 +5,10 @@
   "instances": 1,
   "out_file": "logs/streaming.out.log",
   "error_file": "logs/streaming.err.log",
-  "exec_mode":"fork_mode"
+  "exec_mode":"fork_mode",
+  "env": {
+    "NODE_ENV": "production"
+  }
 },
 {
   "name": "server",
