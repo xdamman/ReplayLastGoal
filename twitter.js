@@ -2,7 +2,6 @@ var RECORD_URL_QUERY = "?start=-7&duration=20";
 var TWITTER_USERNAME = "GoalFlash";
 
 var twitter = require('twitter')
-  , restTwitter = require('node-twitter')
   , humanize = require('humanize')
   , googl = require('goo.gl')
   , request = require('request')
