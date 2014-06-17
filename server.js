@@ -93,7 +93,7 @@ var record = function(start, duration, cb) {
 /* *************
  * Server routes
  */
-server.get('/record', mw.localhost, function(req, res) {
+server.get('/record', function(req, res) {
   if(server.busy) {
     return res.send("Sorry server already busy recording");
   }
