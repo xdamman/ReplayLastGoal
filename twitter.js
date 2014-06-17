@@ -60,11 +60,11 @@ var lastTweet = '';
 
 /* For testing: 
 setTimeout(function() {
-  request(settings.base_url+"/record"+RECORD_URL_QUERY, function(err, res, body) {
-    console.log(humanize.date("Y-m-d H:i:s")+"/record"+RECORD_URL_QUERY+": ", body);
+  var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY;
+  request(url, function(err, res, body) {
+    console.log(humanize.date("Y-m-d H:i:s")+" "+url+": ", body);
     notify(body);
   });
-
 }, 1000);
 */
 
@@ -72,12 +72,13 @@ console.log(humanize.date("Y-m-d H:i:s")+" Connecting to the Twitter Stream for 
 twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {
     console.log(humanize.date("Y-m-d H:i:s")+" Connected");
     stream.on('data', function(tweet) {
-      console.log(humanize.date("Y-m-d H:i:s")+" tweet.text: ", tweet.text);
       if(!tweet.text) return;       
       if(tweet.user.screen_name != TWITTER_USERNAME) return;
+      console.log(humanize.date("Y-m-d H:i:s")+" tweet.text: ", tweet.text);
       lastTweet = tweet.text;
-      request(settings.base_url+"/record"+RECORD_URL_QUERY, function(err, res, body) {
-        console.log(humanize.date("Y-m-d H:i:s")+"/record"+RECORD_URL_QUERY+": ", body);
+      var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY;
+      request(url, function(err, res, body) {
+        console.log(humanize.date("Y-m-d H:i:s")+" "+url+": ", body);
         if(body.match(/http/))
           notify(body);
       });

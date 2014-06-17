@@ -1,5 +1,6 @@
 {
   "base_url": "http://replaylastgoal.com",
+  "port": 1212,
   "videostream" : "",
   "twitter": {
     "consumer_key": "",

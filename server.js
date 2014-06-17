@@ -50,8 +50,8 @@ var record = function(start, duration, cb) {
     return;
   }
 
-  if(((new Date).getTime() - server.lastRecording.time) < 20000) {
-    console.error("Last recording less than 20s ago, returning last recording file ",server.lastRecording.filename);
+  if(((new Date).getTime() - server.lastRecording.time) < 10000) {
+    console.error("Last recording less than 10s ago, returning last recording file ",server.lastRecording.filename);
     return cb(null, server.lastRecording.filename); 
   }
   server.lastRecording.time = new Date;
@@ -93,7 +93,7 @@ var record = function(start, duration, cb) {
 /* *************
  * Server routes
  */
-server.get('/record', function(req, res) {
+server.get('/record', mw.localhost, function(req, res) {
   if(server.busy) {
     return res.send("Sorry server already busy recording");
   }
