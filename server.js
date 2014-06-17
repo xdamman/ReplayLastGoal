@@ -1,8 +1,5 @@
-var FILENAME = "livestream";
+var THUMBNAILS_DIR = "thumbnails/";
 var BUFFER_DIR = "buffer/";
-
-var settings = require('./settings.json');
-var streamurl = settings.videostream;
 
 var avconv = require('avconv')
   , fs = require('fs')
@@ -14,9 +11,11 @@ var avconv = require('avconv')
   , utils = require('./lib/utils')
   , googl = require('goo.gl')
   , mw = require('./lib/middlewares')
+  , env = process.env.NODE_ENV || "development"
   ;
 
 utils.ensureDirectoryExists('videos');
+utils.ensureDirectoryExists('thumbnails');
 
 var logs = {
   avconv: {
@@ -25,13 +24,16 @@ var logs = {
   }
 }
 
+var settings = require('./settings.'+env+'.json');
+var streamurl = settings.videostream;
+
 var server = express();
 var port = process.env.PORT || process.env.NODE_PORT || 1212;
 server.set('port', port);
 
 require('./config/express')(server);
 
-server.lastRecording = { time: new Date, filename: '' };
+server.lastRecording = { time: 0, filename: '' };
 var record = function(start, duration, cb) {
   cb = cb || function() {};
 
@@ -55,14 +57,13 @@ var record = function(start, duration, cb) {
   server.lastRecording.time = new Date;
   server.busy = true;
   var outputfilename = 'videos/'+humanize.date('Y-m-d-H-i-s')+'.mp4';
-  var dir = BUFFER_DIR;
 
   var params = ['-t',duration,'-y','-i'];
 
   if(start < 0) {
-    var files = fs.readdirSync(dir);
+    var files = fs.readdirSync(BUFFER_DIR);
     files.sort(function(a, b) { return utils.seq(a) - utils.seq(b); });
-    files = _.map(files, function(f) { return dir+f; });
+    files = _.map(files, function(f) { return BUFFER_DIR+f; });
     files = _.last(files, Math.round(start*-1/2+1));
     var concat = 'concat:' + files.slice(1).join('|');
     params.push(concat);
@@ -82,6 +83,8 @@ var record = function(start, duration, cb) {
     server.lastRecording.filename = outputfilename;
     server.busy = false;
     cb(null, outputfilename);
+    // Generating the thumbnail
+    utils.mp4toJPG(outputfilename, Math.floor(duration/2));
   });
 };
 
@@ -119,8 +122,9 @@ server.get('/video', function(req, res, next) {
   var v = req.param('v');
   if(!v || !v.match(/201[0-9]\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}/))
     return res.send(400,"Invalid video id");
-
-  res.render('video.hbs', {title: "View video" });
+  
+  var thumbnail = '/'+THUMBNAILS_DIR + v + '.jpg';
+  res.render('video.hbs', {title: "View video replay of the world cup goal", thumbnail: thumbnail});
 });
 
 server.get('/live', function(req, res) {
@@ -129,6 +133,7 @@ server.get('/live', function(req, res) {
   });
 });
 
+server.use('/thumbnails', express.static('thumbnails/'));
 server.use('/videos', express.static('videos/'));
 server.use('/status', require('./lib/status'));
 

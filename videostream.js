@@ -8,6 +8,7 @@ var avconv = require('avconv')
   , exec = require('child_process').exec
   , humanize = require('humanize')
   , utils = require('./lib/utils')
+  , env = process.env.NODE_ENV || "development"
   ;
 
 utils.ensureDirectoryExists(BUFFER_DIR);
@@ -19,7 +20,7 @@ var logs = {
   }
 }
 
-var streamurl = require('./settings.json').videostream;
+var streamurl = require('./settings.'+env+'.json').videostream;
 
 var startStreaming = function() { 
   var params = ['-i',streamurl,'-c','copy',BUFFER_DIR+FILENAME+'.m3u8'];

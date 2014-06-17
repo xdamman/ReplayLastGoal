@@ -6,6 +6,14 @@ var MP4FILE = "test/videos/test.mp4";
 
 describe("utils", function() {
 
+  it.only("converts a mp4 to a jpg", function(done) {
+    utils.mp4toJPG(MP4FILE, 2, function(err, thumbnail) {
+      expect(err).to.not.exist;
+      console.log("Thumbnail file: ", thumbnail);
+      expect(fs.existsSync(thumbnail)).to.be.true;
+      done();
+    });
+  });
   it("converts a mp4 to a gif", function(done) {
     utils.mp4toGIF(MP4FILE, 0, 5, function(err, giffile) {
       expect(err).to.not.exist;
@@ -13,7 +21,6 @@ describe("utils", function() {
       expect(fs.existsSync(giffile)).to.be.true;
       done();
     });
-
   });
 
   after(function(done) {
