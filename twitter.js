@@ -3,9 +3,7 @@ var TWITTER_USERNAME = "GoalFlash";
 
 var twitter = require('twitter')
   , humanize = require('humanize')
-  , googl = require('goo.gl')
   , request = require('request')
-  , fs = require('fs')
   , env = process.env.NODE_ENV || "development"
   , settings = require('./settings.'+env+'.json')
   ;
@@ -13,14 +11,14 @@ var twitter = require('twitter')
 var keys = settings.twitter;
 var twit = new twitter(keys);
 
-var sendTweet = function(text, imagepath, cb) {
+var sendTweet = function(text, imageurl, cb) {
   var form, r;
   keys.token = keys.access_token_key;
   keys.token_secret = keys.access_token_secret;
   r = request.post("https://api.twitter.com/1.1/statuses/update_with_media.json", {oauth: keys}, cb);
   form = r.form();
   form.append('status', text);
-  return form.append('media[]', fs.createReadStream(imagepath));
+  return form.append('media[]', request(imageurl));
 }
 
 var notify = function(url) {
@@ -50,8 +48,9 @@ var notify = function(url) {
     text += " " + url;
   }
 
-  console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet: ", text);
-  sendTweet(text,'./thumbnails/2014-06-16-23-00-23.jpg', function(err, result) {
+  var thumbnail = url.replace('video','thumbnail');
+  console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet: ", text, thumbnail);
+  sendTweet(text, thumbnail, function(err, result) {
     console.error(err);
   });
 };
@@ -59,7 +58,7 @@ var notify = function(url) {
 var lastTweet = '';
 // var lastTweet = 'RT @GoalFlash: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup';
 
-// For testing: 
+/* For testing: 
 setTimeout(function() {
   request(settings.base_url+"/record"+RECORD_URL_QUERY, function(err, res, body) {
     console.log(humanize.date("Y-m-d H:i:s")+"/record"+RECORD_URL_QUERY+": ", body);
@@ -67,7 +66,7 @@ setTimeout(function() {
   });
 
 }, 1000);
-//
+*/
 
 console.log(humanize.date("Y-m-d H:i:s")+" Connecting to the Twitter Stream for @"+TWITTER_USERNAME);
 twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {

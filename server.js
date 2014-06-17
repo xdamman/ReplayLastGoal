@@ -82,9 +82,10 @@ var record = function(start, duration, cb) {
     console.log("Video saved!",e);
     server.lastRecording.filename = outputfilename;
     server.busy = false;
-    cb(null, outputfilename);
     // Generating the thumbnail
-    utils.mp4toJPG(outputfilename, Math.floor(duration/2));
+    utils.mp4toJPG(outputfilename, Math.floor(duration/2), function(err, msg) {
+      cb(null, outputfilename);
+    });
   });
 };
 
@@ -125,6 +126,14 @@ server.get('/video', function(req, res, next) {
   
   var thumbnail = '/'+THUMBNAILS_DIR + v + '.jpg';
   res.render('video.hbs', {title: "View video replay of the world cup goal", thumbnail: thumbnail});
+});
+
+server.get('/thumbnail', function(req, res, next) {
+  var v = req.param('v');
+  if(!v || !v.match(/201[0-9]\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}/))
+    return res.send(400,"Invalid video id");
+  
+  res.sendfile('./'+THUMBNAILS_DIR + v + '.jpg');
 });
 
 server.get('/live', function(req, res) {
