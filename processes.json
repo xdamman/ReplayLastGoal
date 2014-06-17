@@ -27,6 +27,9 @@
   "instances": 1,
   "out_file": "logs/twitter.out.log",
   "error_file": "logs/twitter.err.log",
-  "exec_mode":"fork_mode"
+  "exec_mode":"fork_mode",
+  "env": {
+    "NODE_ENV": "production"
+  }
 } 
 ]
