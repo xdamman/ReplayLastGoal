@@ -1,4 +1,4 @@
-var RECORD_URL_QUERY = "?start=-7&duration=20";
+var RECORD_URL_QUERY = "?start=-8&duration=20";
 var TWITTER_USERNAME = "GoalFlash";
 
 var twitter = require('twitter')
