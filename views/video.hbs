@@ -1,68 +1,71 @@
-<video src="" width="100%" class="hidden" type="video/mp4" controls autoplay></video>
+<div class="homepage">
+  <video src="" width="100%" class="hidden" type="video/mp4" controls autoplay></video>
 
-<div id="content">
-  <div id="source" class="row hidden">
-    <label>Source:</label>
-    <a href="http://www.npo.nl/live/nederland-1">Nederland 1</a> (Netherlands National Television)
-  </div>
+  <div id="content">
+    <div id="source" class="row hidden">
+      <label>Source:</label>
+      <a href="http://www.npo.nl/live/nederland-1">Nederland 1</a> (Netherlands National Television)
+    </div>
 
-  <div id="expiration" class="row">
-    <label>Expiration:</label>
-    <span></span>
-  </div>
+    <div id="expiration" class="row">
+      <label>Expiration:</label>
+      <span></span>
+    </div>
 
-  <script>
-    var attempts = 0;
-    var timestamp_string = window.location.search.substr(3);
-    var n = timestamp_string.match(/[0-9]+/g);
-    var timestamp = new Date(Date.UTC(n[0],parseInt(n[1])-1,n[2],n[3],n[4],n[5]));
-    var el = document.querySelector('#expiration span');
-    var diff = Math.round(((new Date).getTime() - timestamp.getTime())/1000);
-    var diffMinutes = Math.round(diff / 60);
-    var expiration = Math.min(60, 60 - diffMinutes);
-    if(expiration > 0) {
-      var videoEl = document.querySelector("video");
-      videoEl.src = "/videos/" + timestamp_string + ".mp4";
+    <script>
+      var attempts = 0;
+      var timestamp_string = window.location.search.substr(3);
+      var n = timestamp_string.match(/[0-9]+/g);
+      var timestamp = new Date(Date.UTC(n[0],parseInt(n[1])-1,n[2],n[3],n[4],n[5]));
+      var el = document.querySelector('#expiration span');
+      var diff = Math.round(((new Date).getTime() - timestamp.getTime())/1000);
+      var diffMinutes = Math.round(diff / 60);
+      var expiration = Math.min(60, 60 - diffMinutes);
+      if(expiration > 0) {
+        var videoEl = document.querySelector("video");
+        videoEl.src = "/videos/" + timestamp_string + ".mp4";
 
-      // If the video is not fully read to load just yet, we try again
-      videoEl.addEventListener("error", function(e) {
-        if(attempts < 4 && e.srcElement.error.code == 4) {
-          attempts++;
-          setTimeout(function() {
-            videoEl.src = "";
-            // console.log("Retrying to load the video " + "/videos/" + timestamp_string + ".mp4" + " - attempt "+attempts+"/4");
-            videoEl.src = "/videos/" + timestamp_string + ".mp4";
-          }, 1000);
-        }
-      });
-      el.textContent = "This video will expire in " + expiration + " minutes";
-      document.onreadystatechange = function () {
-        if (document.readyState == "interactive") {
-          var els = document.querySelectorAll(".hidden");
-          for(var i=0;i<els.length;i++) {
-            els[i].classList.remove("hidden");
+        // If the video is not fully read to load just yet, we try again
+        videoEl.addEventListener("error", function(e) {
+          if(attempts < 4 && e.srcElement.error.code == 4) {
+            attempts++;
+            setTimeout(function() {
+              videoEl.src = "";
+              // console.log("Retrying to load the video " + "/videos/" + timestamp_string + ".mp4" + " - attempt "+attempts+"/4");
+              videoEl.src = "/videos/" + timestamp_string + ".mp4";
+            }, 1000);
+          }
+        });
+        el.textContent = "This video will expire in " + expiration + " minutes";
+        document.onreadystatechange = function () {
+          if (document.readyState == "interactive") {
+            var els = document.querySelectorAll(".hidden");
+            for(var i=0;i<els.length;i++) {
+              els[i].classList.remove("hidden");
+            }
           }
         }
       }
-    }
-    else { 
-      el.textContent = "This video has expired. Follow @ReplayLastGoal to get the latest video of the goal when it happens"
-    }
-  </script>
+      else { 
+        el.textContent = "This video has expired. Follow @ReplayLastGoal to get the latest video of the goal when it happens"
+      }
+    </script>
 
-  <div id="fairuse" class="row hidden">
-    <label>Fair use:</label>
-    <span><i>Copyright Disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for "fair use" for purposes such as criticism, comment, news reporting, teaching, scholarship, and research. Fair use is a use permitted by copyright statute that might otherwise be infringing. Non-profit, educational or personal use tips the balance in favor of fair use.</i></span>
+    <div id="fairuse" class="row hidden">
+      <label>Fair use:</label>
+      <span><i>Copyright Disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for "fair use" for purposes such as criticism, comment, news reporting, teaching, scholarship, and research. Fair use is a use permitted by copyright statute that might otherwise be infringing. Non-profit, educational or personal use tips the balance in favor of fair use.</i></span>
+    </div>
+
+    <div id="followBtn">
+      <a href="https://twitter.com/ReplayLastGoal" class="twitter-follow-button" data-show-count="false" data-size="large" data-dnt="true">Follow @ReplayLastGoal</a>
+      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+    </div>
+
+    <div class="row hidden">
+      <center>
+        <i>This is a not for profit <a href="https://github.com/xdamman/ReplayLastGoal">open source project</a>. Hopefully you welcome the positive coverage brought by fair use of your content.</i>
+      </center>
+    </div>
+
   </div>
-
-  <div id="followBtn">
-    <a href="https://twitter.com/ReplayLastGoal" class="twitter-follow-button" data-show-count="false" data-size="large" data-dnt="true">Follow @ReplayLastGoal</a>
-    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-  </div>
-
-  <div class="row hidden">
-    <i>This is a not for profit <a href="https://github.com/xdamman/ReplayLastGoal">open source project</a>. Hopefully you welcome the positive coverage brought by fair use of your content.</i>
-  </div>
-
 </div>
-
