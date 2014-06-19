@@ -40,7 +40,7 @@ var makeMessage = function(tweet) {
 
 // var lastTweet = 'RT @GoalFlash: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup';
 
-// For testing:
+/* For testing:
 setTimeout(function() {
   var text = makeMessage('RT @GoalFlash: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup');
   var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&text="+encodeURIComponent(text);
@@ -48,7 +48,7 @@ setTimeout(function() {
     console.log(humanize.date("Y-m-d H:i:s")+" "+url+": ", body);
   });
 }, 1000);
-//
+*/
 
 console.log(humanize.date("Y-m-d H:i:s")+" Connecting to the Twitter Stream for @"+TWITTER_USERNAME);
 twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {

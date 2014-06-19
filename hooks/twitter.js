@@ -13,12 +13,18 @@ var sendTweet = function(text, imageurl, cb) {
   r = request.post("https://api.twitter.com/1.1/statuses/update_with_media.json", {oauth: keys}, cb);
   form = r.form();
   form.append('status', text);
+  r.on('error', function(e) {
+    console.error("Error while sending the tweet: ", e);
+  });
   return form.append('media[]', request(imageurl));
 }
 
 module.exports = function(data) {
-  console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet: ", data.text, data.gif);
-  sendTweet(data.text+" "+data.video, data.gif, function(err, result) {
+
+  var image = (data.gifsize < 3*1024*1024) ? data.gif : data.thumbnail;
+
+  console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet: ", data.text, image);
+  sendTweet(data.text+" "+data.video, image, function(err, result) {
     if(err) console.error(err);
   });
 };

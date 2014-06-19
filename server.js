@@ -46,8 +46,9 @@ server.get('/record', mw.localhost, function(req, res) {
 
   var start = req.param('start', 0);
   var duration = req.param('duration', 30);
+  var text = req.param('text','');
 
-  console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration);
+  console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration+"&text="+text);
   utils.record(start, duration, function(err, videofilename) {
     if(err || !videofilename) return res.send(500, "No video filename returned");
 
@@ -57,17 +58,18 @@ server.get('/record', mw.localhost, function(req, res) {
         utils.mp4toJPG(videofilename, Math.floor(duration/2), done); 
       },
       function(done) {
-        utils.mp4toGIF(videofilename, start, duration, done); 
+        utils.mp4toGIF(videofilename, Math.max(2,start), Math.min(15,duration), done); 
       }], function(err, results) {
         server.busy = false;
         var videoId = videofilename.replace('videos/','').replace('.mp4','');
         var videoUrl = settings.base_url+"/video?v="+videoId;
         var data = {
             id: videoId 
-          , text: req.param('text','')
+          , text: text 
           , video: videoUrl
           , thumbnail: videoUrl.replace('video','thumbnail')
           , gif: videoUrl.replace('video','gif')
+          , gifsize: fs.statSync('videos/'+videoId+'.gif').size
         }
         server.lastRecording.data = data;
         hooks(data);
