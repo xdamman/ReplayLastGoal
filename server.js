@@ -49,19 +49,19 @@ server.get('/record', mw.localhost, function(req, res) {
   var text = req.param('text','');
 
   console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration+"&text="+text);
+  res.send("Recording video...");
   utils.record(start, duration, function(err, videofilename) {
     if(err || !videofilename) return res.send(500, "No video filename returned");
     var videoId = videofilename.replace('videos/','').replace('.mp4','');
     var videoUrl = settings.base_url+"/video?v="+videoId;
 
-    res.send(videoUrl);
     // Generating the thumbnail and animated gif
     async.parallel([
       function(done) {
         utils.mp4toJPG(videofilename, Math.floor(duration/2), done); 
       },
       function(done) {
-        utils.mp4toGIF(videofilename, Math.max(2,start), Math.min(15,duration), done); 
+        utils.mp4toGIF(videofilename, Math.max(2,start), Math.min(14,duration), done); 
       }], function(err, results) {
         server.busy = false;
         var data = {
@@ -69,7 +69,7 @@ server.get('/record', mw.localhost, function(req, res) {
           , text: text 
           , video: videoUrl
           , thumbnail: videoUrl.replace('video','thumbnail')
-          , gif: videoUrl.replace('video','gif')
+          , gif: settings.base_url+"/videos/"+videoId+".gif" 
           , gifsize: fs.statSync('videos/'+videoId+'.gif').size
         }
         server.lastRecording.data = data;
