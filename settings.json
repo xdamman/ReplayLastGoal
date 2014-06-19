@@ -2,6 +2,9 @@
   "base_url": "http://replaylastgoal.com",
   "port": 1212,
   "videostream" : "",
+  "hipchat": {
+    "auth_token": ""
+  },
   "twitter": {
     "consumer_key": "",
     "consumer_secret": "",
