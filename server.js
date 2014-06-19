@@ -3,6 +3,7 @@ var BUFFER_DIR = "buffer/";
 
 var avconv = require('avconv')
   , fs = require('fs')
+  , async = require('async')
   , express = require('express')
   , spawn = require('child_process').spawn
   , exec = require('child_process').exec
@@ -82,9 +83,15 @@ var record = function(start, duration, cb) {
     console.log("Video saved!",e);
     server.lastRecording.filename = outputfilename;
     server.busy = false;
-    // Generating the thumbnail
-    utils.mp4toJPG(outputfilename, Math.floor(duration/2), function(err, msg) {
-      cb(null, outputfilename);
+    // Generating the thumbnail and animated gif
+    async.parallel([
+      function(done) {
+        utils.mp4toJPG(outputfilename, Math.floor(duration/2), done); 
+      },
+      function(done) {
+        utils.mp4toGIF(outputfilename, start, duration, done); 
+      }], function(err, results) {
+        cb(null, outputfilename);
     });
   });
 };
@@ -119,21 +126,20 @@ server.get('/latest', function(req, res) {
   res.redirect("/video?v="+server.lastRecording.filename.replace('.mp4',''));
 });
 
-server.get('/video', function(req, res, next) {
+server.get('/video', mw.requireValidVideoID, function(req, res, next) {
   var v = req.param('v');
-  if(!v || !v.match(/201[0-9]\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}/))
-    return res.send(400,"Invalid video id");
-  
   var thumbnail = '/'+THUMBNAILS_DIR + v + '.jpg';
   res.render('video.hbs', {title: "View video replay of the world cup goal", thumbnail: thumbnail});
 });
 
-server.get('/thumbnail', function(req, res, next) {
+server.get('/thumbnail', mw.requireValidVideoID, function(req, res, next) {
   var v = req.param('v');
-  if(!v || !v.match(/201[0-9]\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}\-[0-9]{2}/))
-    return res.send(400,"Invalid video id");
-  
   res.sendfile('./'+THUMBNAILS_DIR + v + '.jpg');
+});
+
+server.get('/gif', mw.requireValidVideoID, function(req, res, next) {
+  var v = req.param('v');
+  res.sendfile('./videos/' + v + '.gif');
 });
 
 server.get('/live', function(req, res) {
@@ -142,7 +148,6 @@ server.get('/live', function(req, res) {
   });
 });
 
-server.use('/thumbnails', express.static('thumbnails/'));
 server.use('/videos', express.static('videos/'));
 server.use('/status', require('./lib/status'));
 

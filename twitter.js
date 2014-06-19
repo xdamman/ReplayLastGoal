@@ -49,8 +49,9 @@ var notify = function(url) {
   }
 
   var thumbnail = url.replace('video','thumbnail');
-  console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet: ", text, thumbnail);
-  sendTweet(text, thumbnail, function(err, result) {
+  var gif = url.replace('video','gif');
+  console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet: ", text, gif);
+  sendTweet(text, gif, function(err, result) {
     console.error(err);
   });
 };
