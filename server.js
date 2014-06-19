@@ -51,7 +51,10 @@ server.get('/record', mw.localhost, function(req, res) {
   console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration+"&text="+text);
   utils.record(start, duration, function(err, videofilename) {
     if(err || !videofilename) return res.send(500, "No video filename returned");
+    var videoId = videofilename.replace('videos/','').replace('.mp4','');
+    var videoUrl = settings.base_url+"/video?v="+videoId;
 
+    res.send(videoUrl);
     // Generating the thumbnail and animated gif
     async.parallel([
       function(done) {
@@ -61,8 +64,6 @@ server.get('/record', mw.localhost, function(req, res) {
         utils.mp4toGIF(videofilename, Math.max(2,start), Math.min(15,duration), done); 
       }], function(err, results) {
         server.busy = false;
-        var videoId = videofilename.replace('videos/','').replace('.mp4','');
-        var videoUrl = settings.base_url+"/video?v="+videoId;
         var data = {
             id: videoId 
           , text: text 
@@ -73,7 +74,6 @@ server.get('/record', mw.localhost, function(req, res) {
         }
         server.lastRecording.data = data;
         hooks(data);
-        res.send(data);
     });
   });
 });
