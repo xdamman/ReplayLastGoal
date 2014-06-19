@@ -8,7 +8,7 @@ var noop = function() {};
 
 describe("server", function() {
 
-  it.only("records a 5s video in the past", function(done) {
+  it("records a 5s video in the past", function(done) {
     this.timeout(5000);
     request("http://localhost:1212/record?start=-5&duration=5", function(err,res,body) {
       expect(err).to.not.exist;

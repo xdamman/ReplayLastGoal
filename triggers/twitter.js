@@ -5,24 +5,13 @@ var twitter = require('twitter')
   , humanize = require('humanize')
   , request = require('request')
   , env = process.env.NODE_ENV || "development"
-  , settings = require('./settings.'+env+'.json')
+  , settings = require('../settings.'+env+'.json')
   ;
 
-var keys = settings.twitter;
-var twit = new twitter(keys);
+var twit = new twitter(settings.twitter);
 
-var sendTweet = function(text, imageurl, cb) {
-  var form, r;
-  keys.token = keys.access_token_key;
-  keys.token_secret = keys.access_token_secret;
-  r = request.post("https://api.twitter.com/1.1/statuses/update_with_media.json", {oauth: keys}, cb);
-  form = r.form();
-  form.append('status', text);
-  return form.append('media[]', request(imageurl));
-}
-
-var notify = function(url) {
-  var text = lastTweet.replace(/http.*/i,'').replace(/^RT @[a-zA-Z]{1,15}:? ?/i,'').replace(/ $/,'');
+var makeMessage = function(tweet) {
+  var text = tweet.replace(/http.*/i,'').replace(/^RT @[a-zA-Z]{1,15}:? ?/i,'').replace(/ $/,'');
   var matches = text.match(/(.*) (\*?[0-9]\-[0-9]\*?) (.*) \(([0-9]+)'\).*(#[A-Z]{3}) vs (#[A-Z]{3})/);
 
   if(matches && matches.length > 6) {
@@ -34,54 +23,44 @@ var notify = function(url) {
 
     if(score[0] == '*') {
       scorer = team1;
-      against = team2; 
+      against = team2;
     }
     else {
       scorer = team2;
-      against = team1; 
+      against = team1;
     }
     score = score.replace('*','');
 
-    text = "Goal for "+scorer.name+" "+scorer.hashtag+"! Video replay: "+url+" ("+team1.hashtag+" "+score+" "+team2.hashtag+") #WorldCup";
-  }
-  else {
-    text += " " + url;
+    text = "Goal for "+scorer.name+"! "+team1.hashtag+" "+score+" "+team2.hashtag+" #WorldCup \n📺Video:";
   }
 
-  var thumbnail = url.replace('video','thumbnail');
-  var gif = url.replace('video','gif');
-  console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet: ", text, gif);
-  sendTweet(text, gif, function(err, result) {
-    console.error(err);
-  });
+  return text;
+
 };
 
-var lastTweet = '';
 // var lastTweet = 'RT @GoalFlash: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup';
 
-/* For testing: 
+// For testing:
 setTimeout(function() {
-  var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY;
+  var text = makeMessage('RT @GoalFlash: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup');
+  var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&text="+encodeURIComponent(text);
   request(url, function(err, res, body) {
     console.log(humanize.date("Y-m-d H:i:s")+" "+url+": ", body);
-    notify(body);
   });
 }, 1000);
-*/
+//
 
 console.log(humanize.date("Y-m-d H:i:s")+" Connecting to the Twitter Stream for @"+TWITTER_USERNAME);
 twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {
     console.log(humanize.date("Y-m-d H:i:s")+" Connected");
     stream.on('data', function(tweet) {
-      if(!tweet.text) return;       
+      if(!tweet.text) return;
       if(tweet.user.screen_name != TWITTER_USERNAME) return;
       console.log(humanize.date("Y-m-d H:i:s")+" tweet.text: ", tweet.text);
-      lastTweet = tweet.text;
-      var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY;
+      var text = makeMessage(tweet.text);
+      var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&text="+encodeURIComponent(text);
       request(url, function(err, res, body) {
         console.log(humanize.date("Y-m-d H:i:s")+" "+url+": ", body);
-        if(body.match(/http/))
-          notify(body);
       });
     });
 

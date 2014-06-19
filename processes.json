@@ -26,7 +26,7 @@
 },
 {
   "name": "twitter",
-  "script": "twitter.js",
+  "script": "triggers/twitter.js",
   "instances": 1,
   "out_file": "logs/twitter.out.log",
   "error_file": "logs/twitter.err.log",

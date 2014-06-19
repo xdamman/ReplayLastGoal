@@ -23,8 +23,8 @@ Live streaming works either with Flash which is hard to reverse engineer or with
 
 
 ## Audio Video Converter
-You need to have [avconv v10](http://libav.org/avconv.html) installed on your machine. On a Mac, it's a piece of cake. Install brew and then do `brew install avconv` and you are done.
-On Ubuntu, it's a pain. [Those instructions](https://gist.github.com/xdamman/e3387e1adf51aeb021d0) should help you.
+You need to have [ffmpeg 2.2x](https://ffmpeg.org/) installed on your machine. On a Mac, it's a piece of cake. Install brew and then do `brew install ffmpeg` and you are done.
+On Ubuntu, it's a pain. [Those instructions](https://gist.github.com/faleev/3435377) should help you.
 
 
 ## Install
