@@ -1,17 +1,16 @@
-var env = process.env.NODE_ENV || "development"
-  , humanize = require('humanize')
-  , settings = require('../settings.'+env+'.json')
-  ;
-
 var Hipchatter = require('hipchatter');
-var hipchatter = new Hipchatter(settings.hipchat.auth_token);
-console.log("Token: "+settings.hipchat.auth_token);
 
-module.exports = function(data) {
+var Hipchat = function(options) {
 
-  hipchatter.notify("World Cup", { message: data.text+" "+data.video+" "+data.gif }, function(err, res) {
-    console.error("hipchat error: ", err);
-    console.log("hipchat res: ", res);
-  });
+  var hipchatter = new Hipchatter(options.auth_token);
 
+  return function(data, cb) {
+    var cb = cb || function() {};
+
+    var text = data.text+" "+data.video+" \n"+data.gif;
+
+    hipchatter.notify(options.room || "World Cup", { message: text, token: options.token }, cb); 
+  };
 };
+
+module.exports = Hipchat;

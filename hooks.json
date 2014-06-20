@@ -1,0 +1,14 @@
+[{
+  "service": "slack",
+  "options": {
+    "webhookurl": "https://thinkornot.slack.com/services/hooks/incoming-webhook?token=M6RhAeSm05gWEtWrPhSO7Bhy"
+  }
+},
+{
+  "service": "hipchat",
+  "options": {
+    "auth_token": "2100596c92f0b7276460fd3297c505",
+    "token": "ECJ0I7UJBcvorSBy8L6xKQ9ewfhpqiX9VeSx34mx",
+    "room": "Engineering"
+  }
+}]

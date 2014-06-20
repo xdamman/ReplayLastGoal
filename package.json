@@ -34,7 +34,8 @@
     "twitter": "^0.2.9",
     "request": "^2.36.0",
     "async": "^0.9.0",
-    "hipchatter": "^0.1.3"
+    "hipchatter": "^0.1.3",
+    "slack-notify": "^0.1.2"
   },
   "devDependencies": {
     "chai": "^1.9.1"
