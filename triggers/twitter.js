@@ -42,8 +42,14 @@ var makeMessage = function(tweet) {
 
 /* For testing:
 setTimeout(function() {
-  var text = makeMessage('RT @GoalFlash: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup');
+  var text = makeMessage('RT @GoalFlash: Correction: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup');
   var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&text="+encodeURIComponent(text);
+  console.log("Text: ", text);
+      var tweet = { text: 'RT @GoalFlash: Correction: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup'};
+      if(tweet.text.match(/correction/i)) {
+        twit.updateStatus(tweet.text, function(data) {}); 
+        return;
+      }
   request(url, function(err, res, body) {
     console.log(humanize.date("Y-m-d H:i:s")+" "+url+": ", body);
   });
@@ -57,6 +63,11 @@ twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {
       if(!tweet.text) return;
       if(tweet.user.screen_name != TWITTER_USERNAME) return;
       console.log(humanize.date("Y-m-d H:i:s")+" tweet.text: ", tweet.text);
+      // If the tweet is just correcting the score, just tweet it without generating a video
+      if(tweet.text.match(/correction/i)) {
+        twit.updateStatus(tweet.text, function(data) {}); 
+        return;
+      }
       var text = makeMessage(tweet.text);
       var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&text="+encodeURIComponent(text);
       request(url, function(err, res, body) {

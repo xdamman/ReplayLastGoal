@@ -34,7 +34,7 @@ describe("utils", function() {
     utils.mp4toGIF(MP4FILE, 0, 5, function(err, giffile) {
       expect(err).to.not.exist;
       expect(fs.existsSync(giffile)).to.be.true;
-      expect(fs.statSync(giffile).size).to.equal(302537);
+      expect(fs.statSync(giffile).size).to.equal(286925);
       done();
     });
   });
