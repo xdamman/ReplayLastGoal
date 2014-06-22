@@ -1,5 +1,6 @@
 {
   "base_url": "http://replaylastgoal.com",
+  "secret": "admin",
   "port": 1212,
   "videostream" : "",
   "twitter": {

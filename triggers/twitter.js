@@ -1,4 +1,5 @@
-var RECORD_URL_QUERY = "?start=-8&duration=20";
+// var RECORD_URL_QUERY = "?start=-8&duration=20";
+var RECORD_URL_QUERY = "?window=default";
 var TWITTER_USERNAME = "GoalFlash";
 
 var twitter = require('twitter')
@@ -45,11 +46,12 @@ setTimeout(function() {
   var text = makeMessage('RT @GoalFlash: Correction: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup');
   var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&text="+encodeURIComponent(text);
   console.log("Text: ", text);
-      var tweet = { text: 'RT @GoalFlash: Correction: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup'};
+      var tweet = { text: text }; 
       if(tweet.text.match(/correction/i)) {
         twit.updateStatus(tweet.text, function(data) {}); 
         return;
       }
+  console.log("Request: ", url);
   request(url, function(err, res, body) {
     console.log(humanize.date("Y-m-d H:i:s")+" "+url+": ", body);
   });

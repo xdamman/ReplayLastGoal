@@ -24,6 +24,8 @@ var server = express();
 var port = process.env.PORT || process.env.NODE_PORT || 1212;
 server.set('port', port);
 
+server.recordingWindow = { start: -8, duration: 20 };
+
 require('./config/express')(server);
 
 server.lastRecording = { time: 0, data: {} };
@@ -31,6 +33,19 @@ server.lastRecording = { time: 0, data: {} };
 /* *************
  * Server routes
  */
+server.get('/setup', function(req, res) {
+  var secret = req.param('secret');
+
+  if(secret == settings.secret) {
+    var start = req.param('start', server.recordingWindow.start);
+    var duration = req.param('duration', server.recordingWindow.duration);
+    server.recordingWindow.start = start;
+    server.recordingWindow.duration = duration;
+  }
+
+  res.send(server.recordingWindow);
+});
+
 server.get('/record', mw.localhost, function(req, res) {
   if(server.busy) {
     return res.send("Sorry server already busy recording");
@@ -44,8 +59,8 @@ server.get('/record', mw.localhost, function(req, res) {
   server.lastRecording.time = new Date;
   server.busy = true;
 
-  var start = req.param('start', 0);
-  var duration = req.param('duration', 30);
+  var start = req.param('start', server.recordingWindow.start);
+  var duration = req.param('duration', server.recordingWindow.duration);
   var text = req.param('text','');
 
   console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration+"&text="+text);
