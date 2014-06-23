@@ -30,7 +30,7 @@ require('./config/express')(server);
 server.lastRecording = { time: 0, data: {} };
 
 server.info = function() {
-  return { recordingWindow: server.recordingWindow, filter: settings.filter, channel: settings.channel, lastRecording: server.lastRecording };
+  return { recordingWindow: server.recordingWindow, channel: settings.channel, lastRecording: server.lastRecording };
 }
 
 /* *************
@@ -42,12 +42,6 @@ server.get('/setup', function(req, res) {
   if(secret == settings.secret) {
     var start = req.param('start', server.recordingWindow.start);
     var duration = req.param('duration', server.recordingWindow.duration);
-    var filter = req.param('filter');
-    if(filter) {
-      console.log(humanize.date('Y-m-d H:i:s')+" changing filter to "+filter);
-      settings.filter = filter;
-      fs.writeFileSync('./settings.'+env+'.json',JSON.stringify(settings,null,2));
-    }
     var channel = req.param('channel');
     if(channel && settings.videostreams[channel] && channel != settings.channel) {
       console.log(humanize.date('Y-m-d H:i:s')+" changing videostream channel to "+channel);
@@ -77,11 +71,6 @@ server.get('/record', mw.localhost, function(req, res) {
   var text = req.param('text','');
 
   console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration+"&text="+text);
-
-  if(!text.match(new RegExp(settings.filter))) {
-    return res.send("'"+text+"' didn't pass the filter set for this server ("+settings.filter+")");
-  }
-
   res.send("Recording video...");
 
   server.lastRecording.time = new Date;

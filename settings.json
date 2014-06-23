@@ -4,7 +4,6 @@
   "port": 1212,
   "videostreams" : { "channel1": "m3u8-url", "channel2": "m3u8-url" }
   "channel": "channel1",
-  "filter": "#WorldCup",
   "twitter": {
     "consumer_key": "",
     "consumer_secret": "",
