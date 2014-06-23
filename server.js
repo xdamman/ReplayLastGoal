@@ -154,11 +154,12 @@ server.get('/live', function(req, res) {
   if(req.param('secret') != settings.secret) return res.send(403, "Unauthorized");
   var channel = req.param('channel', settings.channel);
   res.render('live.hbs', {
-    videostream: settings.videostreams[channel] 
+    videostream: "/buffer/"+channel+"/livestream.m3u8" // settings.videostreams[channel] 
   });
 });
 
 server.use('/videos', express.static('videos/'));
+server.use('/buffer', express.static('buffer/'));
 server.use('/status', require('./lib/status'));
 
 console.log(humanize.date('Y-m-d H:i:s')+" Server listening on port "+port+" with the following settings: ", server.info());
