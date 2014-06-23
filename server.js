@@ -18,7 +18,6 @@ utils.ensureDirectoryExists('thumbnails');
 var hooks = require('./hooks');
 
 var settings = require('./settings.'+env+'.json');
-var streamurl = settings.videostream;
 
 var server = express();
 var port = process.env.PORT || process.env.NODE_PORT || 1212;
@@ -144,8 +143,10 @@ server.get('/gif', mw.requireValidVideoID, function(req, res, next) {
 });
 
 server.get('/live', function(req, res) {
+  if(req.param('secret') != settings.secret) return res.send(403, "Unauthorized");
+  var channel = req.param('channel', settings.channel);
   res.render('live.hbs', {
-    videostream: streamurl 
+    videostream: settings.videostreams[channel] 
   });
 });
 

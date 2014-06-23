@@ -1,4 +1,4 @@
-var MAX_SEGMENTS = 20; // Number of segments to keep in the buffer directory. A segment is generally 2s of video
+var MAX_SEGMENTS = 30; // Number of segments to keep in the buffer directory. A segment is generally 2s of video
 var FILENAME = "livestream";
 var BUFFER_DIR = "buffer";
 
