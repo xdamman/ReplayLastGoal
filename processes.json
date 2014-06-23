@@ -1,6 +1,6 @@
 [{
   "name": "stream",
-  "script": "videostream.js",
+  "script": "stream.js",
   "watch": false,
   "instances": 1,
   "out_file": "logs/streaming.out.log",

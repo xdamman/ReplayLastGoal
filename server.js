@@ -30,6 +30,10 @@ require('./config/express')(server);
 
 server.lastRecording = { time: 0, data: {} };
 
+server.info = function() {
+  return { recordingWindow: server.recordingWindow, filter: settings.filter, channel: settings.channel, lastRecording: server.lastRecording };
+}
+
 /* *************
  * Server routes
  */
@@ -39,11 +43,24 @@ server.get('/setup', function(req, res) {
   if(secret == settings.secret) {
     var start = req.param('start', server.recordingWindow.start);
     var duration = req.param('duration', server.recordingWindow.duration);
+    var filter = req.param('filter');
+    if(filter) {
+      console.log(humanize.date('Y-m-d H:i:s')+" changing filter to "+filter);
+      settings.filter = filter;
+      fs.writeFileSync('./settings.'+env+'.json',JSON.stringify(settings,null,2));
+    }
+    var channel = req.param('channel');
+    if(channel && settings.videostreams[channel] && channel != settings.channel) {
+      console.log(humanize.date('Y-m-d H:i:s')+" changing videostream channel to "+channel);
+      settings.channel = channel;
+      fs.writeFileSync('./settings.'+env+'.json',JSON.stringify(settings,null,2));
+      exec("pm2 restart stream");
+    }
     server.recordingWindow.start = start;
     server.recordingWindow.duration = duration;
   }
 
-  res.send(server.recordingWindow);
+  res.send(server.info());
 });
 
 server.get('/record', mw.localhost, function(req, res) {
@@ -56,16 +73,22 @@ server.get('/record', mw.localhost, function(req, res) {
     return res.send("Last recording less than 10s ago, aborting"); 
   }
 
-  server.lastRecording.time = new Date;
-  server.busy = true;
-
   var start = req.param('start', server.recordingWindow.start);
   var duration = req.param('duration', server.recordingWindow.duration);
   var text = req.param('text','');
 
   console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration+"&text="+text);
+
+  if(!text.match(new RegExp(settings.filter))) {
+    return res.send("'"+text+"' didn't pass the filter set for this server ("+settings.filter+")");
+  }
+
   res.send("Recording video...");
-  utils.record(start, duration, function(err, videofilename) {
+
+  server.lastRecording.time = new Date;
+  server.busy = true;
+
+  utils.record(settings.channel, start, duration, function(err, videofilename) {
     if(err || !videofilename) return res.send(500, "No video filename returned");
     var videoId = videofilename.replace('videos/','').replace('.mp4','');
     var videoUrl = settings.base_url+"/video?v="+videoId;
@@ -129,5 +152,5 @@ server.get('/live', function(req, res) {
 server.use('/videos', express.static('videos/'));
 server.use('/status', require('./lib/status'));
 
-console.log("Server listening on port "+port);
+console.log(humanize.date('Y-m-d H:i:s')+" Server listening on port "+port+" with the following settings: ", server.info());
 server.listen(port);

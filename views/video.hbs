@@ -13,7 +13,7 @@
 
   <script>
     var attempts = 0;
-    var timestamp_string = window.location.search.substr(3);
+    var timestamp_string = window.location.search.substr(window.location.search.indexOf(20));
     var n = timestamp_string.match(/[0-9]+/g);
     var timestamp = new Date(Date.UTC(n[0],parseInt(n[1])-1,n[2],n[3],n[4],n[5]));
     var el = document.querySelector('#expiration span');
