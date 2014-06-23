@@ -31,10 +31,10 @@ var streamurl = videostreams[channel];
 var startStreaming = function() { 
   var params = ['-i',streamurl,'-c','copy',path.join(BUFFER_DIR,channel,FILENAME+'.m3u8')];
   var stream = spawn('ffmpeg', params);
-  //stream.stdout.pipe(logs.ffmpeg.out);
-  //stream.stderr.pipe(logs.ffmpeg.err);
+  stream.stdout.pipe(logs.ffmpeg.out);
+  stream.stderr.pipe(logs.ffmpeg.err);
   stream.on('exit', function(code) {
-    console.log(humanize.date("Y-m-d H:i:s")+" Stream ended (see error log in logs/ffmpeg.err.log), exiting");
+    console.log(humanize.date("Y-m-d H:i:s")+" Stream ended (see error log in logs/"+channel+".err.log), exiting");
     process.exit(code);
   });
   console.log(humanize.date("Y-m-d H:i:s")+" Starting streaming " + channel + "...");
