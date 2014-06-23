@@ -66,17 +66,18 @@ server.get('/record', mw.localhost, function(req, res) {
     return res.send("Last recording less than 5s ago, aborting"); 
   }
 
+  var channel = req.param('channel', settings.channel); 
   var start = req.param('start', server.recordingWindow.start);
   var duration = req.param('duration', server.recordingWindow.duration);
   var text = req.param('text','');
 
-  console.log(humanize.date('Y-m-d H:i:s')+" /record?start="+start+"&duration="+duration+"&text="+text);
+  console.log(humanize.date('Y-m-d H:i:s')+" /record?channel="+channel+"&start="+start+"&duration="+duration+"&text="+text);
   res.send("Recording video...");
 
   server.lastRecording.time = new Date;
   server.busy = true;
 
-  utils.record(settings.channel, start, duration, function(err, videofilename) {
+  utils.record(channel, start, duration, function(err, videofilename) {
     if(err || !videofilename) return res.send(500, "No video filename returned");
     var videoId = videofilename.replace('videos/','').replace('.mp4','');
     var videoUrl = settings.base_url+"/video?v="+videoId;
