@@ -58,7 +58,9 @@ var makeMessage = function(tweet) {
 
 /* For testing:
 setTimeout(function() {
-  var text = makeMessage('RT @GoalFlash: Correction: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup');
+  var tweet = "RT @GoalFlash: Chile 1-1* Netherlands (44') #CHI vs #NED http://www.goal.com/  #GoalFlash #WorldCup";
+  var tweet = "RT @GoalFlash: Australia 1-1* Spain (44') #AUS vs #ESP http://www.goal.com/  #GoalFlash #WorldCup";
+  var text = makeMessage(tweet);
   var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&channel="+getChannel(text)+"&text="+encodeURIComponent(text);
   console.log("Text: ", text);
       var tweet = { text: text }; 

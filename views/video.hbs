@@ -14,6 +14,9 @@
   <script>
     var attempts = 0;
     var videoId = window.location.search.substr(3);
+    var channel = videoId.substr(0,videoId.indexOf('-'));
+    var channelId = parseInt(channel.replace(/.*([0-9]+)/,'$1'),10);
+    if(channelId > 3) channelId = 1;
     var timestamp_string = videoId.substr(videoId.indexOf(20));
     var n = timestamp_string.match(/[0-9]+/g);
     var timestamp = new Date(Date.UTC(n[0],parseInt(n[1])-1,n[2],n[3],n[4],n[5]));
@@ -48,6 +51,11 @@
     }
     else { 
       el.textContent = "This video has expired. Follow @ReplayLastGoal to get the latest video of the goal when it happens"
+    }
+    if(channel!="ned1") {
+      var source = document.querySelector('#source a');
+      source.href = source.href.replace(1, channelId);
+      source.textContent = source.textContent.replace(1, channelId); 
     }
   </script>
 
