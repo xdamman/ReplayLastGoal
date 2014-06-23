@@ -36,6 +36,24 @@ server.info = function() {
 /* *************
  * Server routes
  */
+server.get('/start', function(req, res) {
+  if(req.param('secret') != settings.secret) return res.send(403, "Unauthorized");
+  var channel = req.param('channel');
+  if(settings.videostreams[channel]) {
+    exec("pm2 start stream-"+channel);
+    return res.send("Running pm2 start stream-"+channel);
+  }
+});
+
+server.get('/stop', function(req, res) {
+  if(req.param('secret') != settings.secret) return res.send(403, "Unauthorized");
+  var channel = req.param('channel');
+  if(settings.videostreams[channel]) {
+    exec("pm2 stop stream-"+channel);
+    return res.send("Running pm2 stop stream-"+channel);
+  }
+});
+
 server.get('/setup', function(req, res) {
   var secret = req.param('secret');
 
