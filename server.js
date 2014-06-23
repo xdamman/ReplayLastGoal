@@ -40,8 +40,8 @@ server.get('/start', function(req, res) {
   if(req.param('secret') != settings.secret) return res.send(403, "Unauthorized");
   var channel = req.param('channel');
   if(settings.videostreams[channel]) {
-    exec("pm2 start stream-"+channel);
-    return res.send("Running pm2 start stream-"+channel);
+    exec("pm2 restart stream-"+channel);
+    return res.send("Running pm2 restart stream-"+channel);
   }
 });
 
