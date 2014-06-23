@@ -61,9 +61,9 @@ server.get('/record', mw.localhost, function(req, res) {
     return res.send("Sorry server already busy recording");
   }
 
-  if(((new Date).getTime() - server.lastRecording.time) < 10000) {
-    console.error("Last recording less than 10s ago, aborting");
-    return res.send("Last recording less than 10s ago, aborting"); 
+  if(((new Date).getTime() - server.lastRecording.time) < 5000) {
+    console.error("Last recording less than 5s ago, aborting");
+    return res.send("Last recording less than 5s ago, aborting"); 
   }
 
   var start = req.param('start', server.recordingWindow.start);
