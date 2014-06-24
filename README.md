@@ -49,9 +49,11 @@ Special thanks to Benjamin Goering ([@bengo](https://twitter.com/bengo)) for his
 
 ## TODO
 (Pull requests welcome)
+- [x] Support for multichannels when there is more than one match at once
 - [ ] Better test coverage
-- [ ] More webhooks (e.g. HipChat)
-- [ ] Generate image to send with the tweet (finding the right one might be tricky)
+- [x] More webhooks (e.g. HipChat)
+- [ ] Interface to manage webhooks and allow anyone to add their own webhook
+- [x] Generate image to send with the tweet (finding the right one might be tricky)
 - [ ] Refactoring to start streaming the video of the goal as soon as we start recording
-- [ ] Automatically create a video summary with all the goals after the game ends
 - [ ] Automatically turn on/off the input stream when there is a match
+- [ ] Automatically create a video summary with all the goals after the game ends

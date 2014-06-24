@@ -1,5 +1,6 @@
 # settings.env.json (e.g. settings.production.json and settings.development.json)
 settings.*.json
+hooks/config.*.json
 buffer/
 videos/
 thumbnails/

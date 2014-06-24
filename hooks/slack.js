@@ -10,18 +10,19 @@ var Slack = function(options) {
     var cb = cb || function() {};
 
     var tokens = data.text.match(/(.*)(#.{3} [0-9]\-[0-9] #.{3})/);
-    var text = tokens[1];
-    var score = tokens[2];
+    var fields = { video: data.video };
+    var text = data.text;
+    if(tokens && tokens.length > 2) {
+      text = tokens[1];
+      fields.score = tokens[2];
+    }
 
     slack.send({
       channel: options.channel || "#general", 
       icon_url: 'http://replaylastgoal.com/img/avatar.png',
       text: text+" "+data.gif,
       username: options.username || "ReplayLastGoal",
-      fields: {
-        score: score,
-        video: data.video
-      }
+      fields: fields
     }, cb);
   };
 };

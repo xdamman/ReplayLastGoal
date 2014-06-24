@@ -1,0 +1,16 @@
+{
+  "hooks": [{
+    "service": "slack",
+    "options": {
+      "webhookurl": ""
+    }
+  },
+  {
+    "service": "hipchat",
+    "options": {
+      "auth_token": "",
+      "token": "",
+      "room": ""
+    }
+  }]
+}

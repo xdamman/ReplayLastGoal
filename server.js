@@ -15,7 +15,7 @@ var fs = require('fs')
 utils.ensureDirectoryExists('videos');
 utils.ensureDirectoryExists('thumbnails');
 
-var hooks = require('./hooks');
+var hooks = require('./hooks/index');
 
 var settings = require('./settings.'+env+'.json');
 
@@ -118,7 +118,11 @@ server.get('/record', mw.localhost, function(req, res) {
           , gifsize: fs.statSync('videos/'+videoId+'.gif').size
         }
         server.lastRecording.data = data;
-        hooks(data);
+        try { 
+          hooks(data);
+        } catch(e) {
+          console.error("Error in hooks: ", e, e.stack);
+        }
     });
   });
 });
@@ -136,8 +140,9 @@ server.get('/latest', function(req, res) {
 
 server.get('/video', mw.requireValidVideoID, function(req, res, next) {
   var v = req.param('v');
-  var thumbnail = '/'+THUMBNAILS_DIR + v + '.jpg';
-  res.render('video.hbs', {title: "View video replay of the world cup goal", thumbnail: thumbnail});
+  var video = settings.base_url+'/videos/'+v+'.mp4';
+  var thumbnail = settings.base_url+'/thumbnail?v='+ v;
+  res.render('video.hbs', {title: "View video replay of the world cup goal", thumbnail: thumbnail, video: video });
 });
 
 server.get('/thumbnail', mw.requireValidVideoID, function(req, res, next) {
@@ -162,5 +167,5 @@ server.use('/videos', express.static('videos/'));
 server.use('/buffer', express.static('buffer/'));
 server.use('/status', require('./lib/status'));
 
-console.log(humanize.date('Y-m-d H:i:s')+" Server listening on port "+port+" with the following settings: ", server.info());
+console.log(humanize.date('Y-m-d H:i:s')+" Server listening in "+server.set('env')+" environment on port "+port+" with the following settings: ", server.info());
 server.listen(port);

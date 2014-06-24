@@ -1,5 +1,16 @@
-var hooks = require('../hooks.json')
-  , async = require('async');
+var env = process.env.NODE_ENV || "development"
+  , fs = require('fs')
+  , async = require('async')
+  , path = require('path')
+  , twitter = require('./twitter')
+  ;
+
+// Loads hooks/config.[development|production].json with the definition of each hooks
+var configFile = path.join(__dirname,'config.'+env+'.json');
+var config = { hooks: [] };
+if(fs.existsSync(configFile)) {
+  config = require(configFile);
+}
 
 var services = {
   hipchat: require('./hipchat'),
@@ -9,12 +20,12 @@ var services = {
 module.exports = function(data, cb) {
   var cb = cb || function() {};
 
-  console.log("Processing "+hooks.length+" hooks");
-
   console.log("Calling hook twitter with ", data);
-  require('./twitter')(data);
+  twitter(data);
 
-  async.each(hooks, function(h, done) {
+  console.log("Processing "+config.hooks.length+" external hooks");
+
+  async.each(config.hooks, function(h, done) {
     if(!services[h.service]) {
       console.error("Invalid service "+h.service+", skipping");
       return done();
