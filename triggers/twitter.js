@@ -11,15 +11,15 @@ var twitter = require('twitter')
 
 
 var mapping = {
-  "#ITA": "ned1",
-  "#ENG": "ned2",
-  "#GRE": "ned1",
-  "#JPN": "ned3"
+  "ITA": "ned1",
+  "ENG": "ned2",
+  "GRE": "ned1",
+  "JPN": "ned3"
 }
 
 var getChannel = function(tweet) {
   for(var i in mapping) {
-    if(tweet.match(new RegExp(i,'i'))) return mapping[i];
+    if(tweet.match(new RegExp(i))) return mapping[i];
   }
   return "ned1";
 }
@@ -50,6 +50,12 @@ var makeMessage = function(tweet) {
     text = "Goal for "+scorer.name+"! "+team1.hashtag+" "+score+" "+team2.hashtag+" #WorldCup \n📺Video:";
   }
 
+  // If text length allows it, we add the #GoalFlash hashtag
+  // (21 chars for video link, 21 chars for gif link, plus spaces)
+  if(text.length < 140 - 22 - 22 - 11) {
+    text += " #GoalFlash";
+  }
+  
   return text;
 
 };
@@ -60,6 +66,7 @@ var makeMessage = function(tweet) {
 setTimeout(function() {
   var tweet = "RT @GoalFlash: Chile 1-1* Netherlands (44') #CHI vs #NED http://www.goal.com/  #GoalFlash #WorldCup";
   var tweet = "RT @GoalFlash: Australia 1-1* Spain (44') #AUS vs #ESP http://www.goal.com/  #GoalFlash #WorldCup";
+  var tweet= "RT @GoalFlash: Italy 0-1* Uruguay (81') #ITAvsURU http://t.co/xsiYol5i5F #GoalFlash #WorldCup";
   var text = makeMessage(tweet);
   var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&channel="+getChannel(text)+"&text="+encodeURIComponent(text);
   console.log("Text: ", text);
