@@ -12,5 +12,12 @@
       "token": "",
       "room": ""
     }
+  },
+  {
+    "service": "facebook",
+    "options": {
+      "page_id" : "",
+      "page_access_token" : ""
+    }
   }]
 }

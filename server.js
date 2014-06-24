@@ -113,6 +113,7 @@ server.get('/record', mw.localhost, function(req, res) {
             id: videoId 
           , text: text 
           , video: videoUrl
+          , videofilename: videofilename
           , thumbnail: videoUrl.replace('video','thumbnail')
           , gif: settings.base_url+"/videos/"+videoId+".gif" 
           , gifsize: fs.statSync('videos/'+videoId+'.gif').size

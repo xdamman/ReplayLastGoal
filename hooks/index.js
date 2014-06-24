@@ -14,8 +14,9 @@ if(fs.existsSync(configFile)) {
 
 var services = {
   hipchat: require('./hipchat'),
-  slack: require('./slack')
-}
+  slack: require('./slack'),
+  facebook: require('./facebook')
+};
 
 module.exports = function(data, cb) {
   var cb = cb || function() {};
