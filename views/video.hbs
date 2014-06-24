@@ -13,16 +13,20 @@
 
   <script>
     var attempts = 0;
-    var timestamp_string = window.location.search.substr(3);
+    var videoId = window.location.search.substr(3);
+    var channel = videoId.substr(0,videoId.indexOf('-'));
+    var channelId = parseInt(channel.replace(/.*([0-9]+)/,'$1'),10);
+    if(channelId > 3) channelId = 1;
+    var timestamp_string = videoId.substr(videoId.indexOf(20));
     var n = timestamp_string.match(/[0-9]+/g);
     var timestamp = new Date(Date.UTC(n[0],parseInt(n[1])-1,n[2],n[3],n[4],n[5]));
     var el = document.querySelector('#expiration span');
     var diff = Math.round(((new Date).getTime() - timestamp.getTime())/1000);
     var diffMinutes = Math.round(diff / 60);
-    var expiration = Math.min(60, 60 - diffMinutes);
+    var expiration = Math.min(90, 90 - diffMinutes);
     if(expiration > 0) {
       var videoEl = document.querySelector("video");
-      videoEl.src = "/videos/" + timestamp_string + ".mp4";
+      videoEl.src = "/videos/" + videoId + ".mp4";
 
       // If the video is not fully read to load just yet, we try again
       videoEl.addEventListener("error", function(e) {
@@ -30,8 +34,8 @@
           attempts++;
           setTimeout(function() {
             videoEl.src = "";
-            // console.log("Retrying to load the video " + "/videos/" + timestamp_string + ".mp4" + " - attempt "+attempts+"/4");
-            videoEl.src = "/videos/" + timestamp_string + ".mp4";
+            // console.log("Retrying to load the video " + "/videos/" + videoId + ".mp4" + " - attempt "+attempts+"/4");
+            videoEl.src = "/videos/" + videoId + ".mp4";
           }, 1000);
         }
       });
@@ -48,6 +52,11 @@
     else { 
       el.textContent = "This video has expired. Follow @ReplayLastGoal to get the latest video of the goal when it happens"
     }
+    if(channel!="ned1") {
+      var source = document.querySelector('#source a');
+      source.href = source.href.replace(1, channelId);
+      source.textContent = source.textContent.replace(1, channelId); 
+    }
   </script>
 
   <div id="fairuse" class="row hidden">
@@ -61,8 +70,9 @@
   </div>
 
   <div class="row hidden">
-    <i>This is a not for profit <a href="https://github.com/xdamman/ReplayLastGoal">open source project</a>. Hopefully you welcome the positive coverage brought by fair use of your content.</i>
+    <center>
+      <i>This is a not for profit <a href="https://github.com/xdamman/ReplayLastGoal">open source project</a>. Hopefully you welcome the positive coverage brought by fair use of your content.</i>
+    </center>
   </div>
 
 </div>
-

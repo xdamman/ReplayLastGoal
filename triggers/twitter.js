@@ -1,4 +1,5 @@
-var RECORD_URL_QUERY = "?start=-8&duration=20";
+// var RECORD_URL_QUERY = "?start=-8&duration=20";
+var RECORD_URL_QUERY = "?window=default";
 var TWITTER_USERNAME = "GoalFlash";
 
 var twitter = require('twitter')
@@ -7,6 +8,21 @@ var twitter = require('twitter')
   , env = process.env.NODE_ENV || "development"
   , settings = require('../settings.'+env+'.json')
   ;
+
+
+var mapping = {
+  "#ITA": "ned1",
+  "#ENG": "ned2",
+  "#GRE": "ned1",
+  "#JPN": "ned3"
+}
+
+var getChannel = function(tweet) {
+  for(var i in mapping) {
+    if(tweet.match(new RegExp(i,'i'))) return mapping[i];
+  }
+  return "ned1";
+}
 
 var twit = new twitter(settings.twitter);
 
@@ -38,12 +54,21 @@ var makeMessage = function(tweet) {
 
 };
 
-// var lastTweet = 'RT @GoalFlash: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup';
+//var lastTweet = 'RT #BRA @GoalFlash: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup';
 
 /* For testing:
 setTimeout(function() {
-  var text = makeMessage('RT @GoalFlash: Colombia 3-1* Greece (90\') #COL vs #GRE http://t.co/xsiYol5i5F #GoalFlash #WorldCup');
-  var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&text="+encodeURIComponent(text);
+  var tweet = "RT @GoalFlash: Chile 1-1* Netherlands (44') #CHI vs #NED http://www.goal.com/  #GoalFlash #WorldCup";
+  var tweet = "RT @GoalFlash: Australia 1-1* Spain (44') #AUS vs #ESP http://www.goal.com/  #GoalFlash #WorldCup";
+  var text = makeMessage(tweet);
+  var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&channel="+getChannel(text)+"&text="+encodeURIComponent(text);
+  console.log("Text: ", text);
+      var tweet = { text: text }; 
+      if(tweet.text.match(/correction/i)) {
+        twit.updateStatus(tweet.text, function(data) {}); 
+        return;
+      }
+  console.log("Request: ", url);
   request(url, function(err, res, body) {
     console.log(humanize.date("Y-m-d H:i:s")+" "+url+": ", body);
   });
@@ -57,8 +82,13 @@ twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {
       if(!tweet.text) return;
       if(tweet.user.screen_name != TWITTER_USERNAME) return;
       console.log(humanize.date("Y-m-d H:i:s")+" tweet.text: ", tweet.text);
+      // If the tweet is just correcting the score, just tweet it without generating a video
+      if(tweet.text.match(/correction/i)) {
+        twit.updateStatus(tweet.text, function(data) {}); 
+        return;
+      }
       var text = makeMessage(tweet.text);
-      var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&text="+encodeURIComponent(text);
+      var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&channel="+getChannel(text)+"&text="+encodeURIComponent(text);
       request(url, function(err, res, body) {
         console.log(humanize.date("Y-m-d H:i:s")+" "+url+": ", body);
       });
