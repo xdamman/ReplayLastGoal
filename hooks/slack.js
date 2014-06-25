@@ -19,7 +19,7 @@ var Slack = function(options) {
 
     slack.send({
       channel: options.channel || "#general", 
-      icon_url: 'http://replaylastgoal.com/img/avatar.png',
+      icon_url: 'http://i.imgur.com/4gkmsLq.png',
       text: text+" "+data.gif,
       username: options.username || "ReplayLastGoal",
       fields: fields
