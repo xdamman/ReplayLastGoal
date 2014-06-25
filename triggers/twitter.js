@@ -96,11 +96,11 @@ twit.stream('user', {track:TWITTER_USERNAME}, function(stream) {
       console.log(humanize.date("Y-m-d H:i:s")+" tweet.text: ", tweet.text);
       // If the tweet is just correcting the score, just tweet it without generating a video
       if(tweet.text.match(/correction/i)) {
-        // We wait 10s to tweet to make sure we don't tweet the correction
+        // We wait 15s to tweet to make sure we don't tweet the correction
         // before the video of the disallowed goal
         setTimeout(function() {
           twit.updateStatus(tweet.text, function(data) {}); 
-        }, 10000); 
+        }, 15000); 
         return;
       }
       var text = makeMessage(tweet.text);
