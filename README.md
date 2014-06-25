@@ -44,7 +44,10 @@ You are now ready to start the application:
 Share the love by [tweeting](https://twitter.com/intent/tweet?status=%40xdamman%20Thanks%20for%20%40ReplayLastGoal!%20I%20love%20it!) or favoriting this repo!
 Oh, and pull requests are more than welcome! :-)
 
-## Special thanks
+## Contributors
+- [Laurent VB](https://github.com/xdamman/ReplayLastGoal/pull/1) (facebook integration)
+- [Jonathan Kupferman](https://github.com/xdamman/ReplayLastGoal/pull/2) (better gif quality)
+
 Special thanks to Benjamin Goering ([@bengo](https://twitter.com/bengo)) for his help.
 
 ## TODO
