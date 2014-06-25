@@ -28,6 +28,7 @@ server.recordingWindow = { start: -8, duration: 20 };
 require('./config/express')(server);
 
 server.lastRecording = { time: 0, data: {} };
+server.set('secret', settings.secret);
 
 server.info = function() {
   return { recordingWindow: server.recordingWindow, channel: settings.channel, lastRecording: server.lastRecording };
@@ -36,8 +37,7 @@ server.info = function() {
 /* *************
  * Server routes
  */
-server.get('/start', function(req, res) {
-  if(req.param('secret') != settings.secret) return res.send(403, "Unauthorized");
+server.get('/start', mw.restricted, function(req, res) {
   var channel = req.param('channel');
   if(settings.videostreams[channel]) {
     exec("pm2 restart stream-"+channel);
@@ -45,8 +45,7 @@ server.get('/start', function(req, res) {
   }
 });
 
-server.get('/stop', function(req, res) {
-  if(req.param('secret') != settings.secret) return res.send(403, "Unauthorized");
+server.get('/stop', mw.restricted, function(req, res) {
   var channel = req.param('channel');
   if(settings.videostreams[channel]) {
     exec("pm2 stop stream-"+channel);
@@ -54,27 +53,24 @@ server.get('/stop', function(req, res) {
   }
 });
 
-server.get('/setup', function(req, res) {
-  var secret = req.param('secret');
+server.get('/setup', mw.restricted, function(req, res) {
 
-  if(secret == settings.secret) {
-    var start = req.param('start', server.recordingWindow.start);
-    var duration = req.param('duration', server.recordingWindow.duration);
-    var channel = req.param('channel');
-    if(channel && settings.videostreams[channel] && channel != settings.channel) {
-      console.log(humanize.date('Y-m-d H:i:s')+" changing videostream channel to "+channel);
-      settings.channel = channel;
-      fs.writeFileSync('./settings.'+env+'.json',JSON.stringify(settings,null,2));
-      exec("pm2 restart stream");
-    }
-    server.recordingWindow.start = start;
-    server.recordingWindow.duration = duration;
+  var start = req.param('start', server.recordingWindow.start);
+  var duration = req.param('duration', server.recordingWindow.duration);
+  var channel = req.param('channel');
+  if(channel && settings.videostreams[channel] && channel != settings.channel) {
+    console.log(humanize.date('Y-m-d H:i:s')+" changing videostream channel to "+channel);
+    settings.channel = channel;
+    fs.writeFileSync('./settings.'+env+'.json',JSON.stringify(settings,null,2));
+    exec("pm2 restart stream");
   }
+  server.recordingWindow.start = start;
+  server.recordingWindow.duration = duration;
 
   res.send(server.info());
 });
 
-server.get('/record', mw.localhost, function(req, res) {
+server.get('/record', mw.restricted, function(req, res) {
   if(server.busy) {
     return res.send("Sorry server already busy recording");
   }
@@ -156,8 +152,7 @@ server.get('/gif', mw.requireValidVideoID, function(req, res, next) {
   res.sendfile('./videos/' + v + '.gif');
 });
 
-server.get('/live', function(req, res) {
-  if(req.param('secret') != settings.secret) return res.send(403, "Unauthorized");
+server.get('/live', mw.restricted, function(req, res) {
   var channel = req.param('channel', settings.channel);
   res.render('live.hbs', {
     videostream: "/buffer/"+channel+"/livestream.m3u8" // settings.videostreams[channel] 
