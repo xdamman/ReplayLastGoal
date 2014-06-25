@@ -26,6 +26,6 @@ module.exports = function(data) {
   console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet ("+tweet.length+" chars): ", tweet);
   sendTweet(tweet, image, function(err, result) {
     if(err) console.error(err);
-    console.log("result: ", result.body);
+    // console.log("result: ", result.body);
   });
 };
