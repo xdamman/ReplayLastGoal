@@ -28,7 +28,12 @@ var twit = new twitter(settings.twitter);
 
 var makeMessage = function(tweet) {
   var text = tweet.replace(/http.*/i,'').replace(/^RT @[a-zA-Z]{1,15}:? ?/i,'').replace(/ $/,'');
-  var matches = text.match(/(.*) (\*?[0-9]\-[0-9]\*?) (.*) \(([0-9]+)'\).*(#[A-Z]{3}) vs (#[A-Z]{3})/);
+
+  // Initial pattern from @GoalFlash: "Chile 1-1* Netherlands (44') #CHI vs #NED http://www.goal.com/  #GoalFlash #WorldCup"
+  // var matches = text.match(/(.*) (\*?[0-9]\-[0-9]\*?) (.*) \(([0-9]+)'\).*(#[A-Z]{3}) vs (#[A-Z]{3})/);
+
+  // New pattern: "Italy 0-1* Uruguay (81') #ITAvsURU http://t.co/xsiYol5i5F #GoalFlash #WorldCup"
+  var matches = text.match(/(.*) (\*?[0-9]\-[0-9]\*?) (.*) \(([0-9]+)'\).*#([A-Z]{3})vs([A-Z]{3})/);
 
   if(matches && matches.length > 6) {
     var scorer, against;
@@ -47,14 +52,16 @@ var makeMessage = function(tweet) {
     }
     score = score.replace('*','');
 
-    text = "Goal for "+scorer.name+"! "+team1.hashtag+" "+score+" "+team2.hashtag+" #WorldCup \n📺Video:";
+    text = "Goal for "+scorer.name+"! #"+team1.hashtag+" "+score+" #"+team2.hashtag;
   }
 
   // If text length allows it, we add the #GoalFlash hashtag
   // (21 chars for video link, 21 chars for gif link, plus spaces)
-  if(text.length < 140 - 22 - 22 - 11) {
+  if(text.length < 140 - 22 - 22 - 11 - 14) {
     text += " #GoalFlash";
   }
+
+  text += " \n📺HD Video:"; // 14 chars long
   
   return text;
 
@@ -64,8 +71,6 @@ var makeMessage = function(tweet) {
 
 /* For testing:
 setTimeout(function() {
-  var tweet = "RT @GoalFlash: Chile 1-1* Netherlands (44') #CHI vs #NED http://www.goal.com/  #GoalFlash #WorldCup";
-  var tweet = "RT @GoalFlash: Australia 1-1* Spain (44') #AUS vs #ESP http://www.goal.com/  #GoalFlash #WorldCup";
   var tweet= "RT @GoalFlash: Italy 0-1* Uruguay (81') #ITAvsURU http://t.co/xsiYol5i5F #GoalFlash #WorldCup";
   var text = makeMessage(tweet);
   var url = "http://localhost:"+settings.port+"/record"+RECORD_URL_QUERY+"&channel="+getChannel(text)+"&text="+encodeURIComponent(text);
