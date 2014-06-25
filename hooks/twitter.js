@@ -22,9 +22,10 @@ var sendTweet = function(text, imageurl, cb) {
 module.exports = function(data) {
 
   var image = (data.gifsize < 3*1024*1024) ? data.gif : data.thumbnail;
-
-  console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet: ", data.text, image);
-  sendTweet(data.text+" "+data.video, image, function(err, result) {
+  var tweet = data.text + " " + data.video;
+  console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet ("+tweet.length+" chars): ", tweet);
+  sendTweet(tweet, image, function(err, result) {
     if(err) console.error(err);
+    // console.log("result: ", result.body);
   });
 };

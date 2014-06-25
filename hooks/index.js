@@ -12,6 +12,8 @@ if(fs.existsSync(configFile)) {
   config = require(configFile);
 }
 
+console.log(">>> "+config.hooks.length+" external hooks loaded");
+
 var services = {
   hipchat: require('./hipchat'),
   slack: require('./slack'),

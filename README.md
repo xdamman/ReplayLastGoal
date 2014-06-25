@@ -44,15 +44,20 @@ You are now ready to start the application:
 Share the love by [tweeting](https://twitter.com/intent/tweet?status=%40xdamman%20Thanks%20for%20%40ReplayLastGoal!%20I%20love%20it!) or favoriting this repo!
 Oh, and pull requests are more than welcome! :-)
 
-## Special thanks
+## Contributors
+- [Laurent VB](https://github.com/xdamman/ReplayLastGoal/pull/1) (facebook integration)
+- [Jonathan Kupferman](https://github.com/xdamman/ReplayLastGoal/pull/2) (better gif quality)
+
 Special thanks to Benjamin Goering ([@bengo](https://twitter.com/bengo)) for his help.
 
 ## TODO
 (Pull requests welcome)
+- [ ] Better pin point when the goal happens in the 20s window to trim down the duration of the video and gif (we could use a VU meter to identify when the sound level peaks)
 - [x] Support for multichannels when there is more than one match at once
 - [ ] Better test coverage
-- [x] More webhooks (e.g. HipChat)
 - [ ] Interface to manage webhooks and allow anyone to add their own webhook
+- [ ] [Hipchat Add On](https://www.hipchat.com/docs/apiv2/addons) 
+- [ ] Slack add on
 - [x] Generate image to send with the tweet (finding the right one might be tricky)
 - [ ] Refactoring to start streaming the video of the goal as soon as we start recording
 - [ ] Automatically turn on/off the input stream when there is a match
