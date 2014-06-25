@@ -13,8 +13,9 @@ var Facebook = function (options) {
 
     var r = request.post(uploadUrl, function (err, httpResponse, body) {
       if (err){
-        console.error(humanize.date('Y-m-d H:i:s')+' Error while posting on facebook: ', e);
+        console.error(humanize.date('Y-m-d H:i:s')+' Error while posting on facebook: ', err);
       }
+      console.log("Response from facebook: ", body);
       cb(err);
     });
 
