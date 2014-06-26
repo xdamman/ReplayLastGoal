@@ -11,10 +11,10 @@ var twitter = require('twitter')
 
 
 var mapping = {
-  "ARG": "ned1",
-  "IRN": "ned2",
-  "FRA": "ned1",
-  "HON": "ned3"
+  "USA": "ned1",
+  "POR": "ned2",
+  "BEL": "ned3",
+  "ALG": "ned1"
 }
 
 var getChannel = function(tweet) {
