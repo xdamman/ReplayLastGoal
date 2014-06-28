@@ -12,32 +12,6 @@
   }
 },
 {
-  "name": "stream-ned2",
-  "script": "stream.js",
-  "watch": false,
-  "instances": 1,
-  "out_file": "logs/streaming-ned2.out.log",
-  "error_file": "logs/streaming-ned2.err.log",
-  "exec_mode":"fork_mode",
-  "env": {
-    "NODE_ENV": "production",
-    "CHANNEL": "ned2"
-  }
-},
-{
-  "name": "stream-ned3",
-  "script": "stream.js",
-  "watch": false,
-  "instances": 1,
-  "out_file": "logs/streaming-ned3.out.log",
-  "error_file": "logs/streaming-ned3.err.log",
-  "exec_mode":"fork_mode",
-  "env": {
-    "NODE_ENV": "production",
-    "CHANNEL": "ned3"
-  }
-},
-{
   "name": "server",
   "script": "server.js",
   "instances": 1,

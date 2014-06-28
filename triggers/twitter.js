@@ -9,18 +9,21 @@ var twitter = require('twitter')
   , settings = require('../settings.'+env+'.json')
   ;
 
-
+/*
 var mapping = {
   "USA": "ned1",
   "POR": "ned2",
   "BEL": "ned3",
   "ALG": "ned1"
 }
+*/
 
 var getChannel = function(tweet) {
+  /*
   for(var i in mapping) {
     if(tweet.match(new RegExp(i))) return mapping[i];
   }
+  */
   return "ned1";
 }
 
