@@ -37,7 +37,7 @@
     var el = document.querySelector('#expiration span');
     var diff = Math.round(((new Date).getTime() - timestamp.getTime())/1000);
     var diffMinutes = Math.round(diff / 60);
-    var expiration = Math.min(60, 60 - diffMinutes);
+    var expiration = Math.min(45, 45 - diffMinutes);
     if(expiration > 0) {
       var videoEl = document.querySelector("video");
       videoEl.src = "/videos/" + videoId + ".mp4";
