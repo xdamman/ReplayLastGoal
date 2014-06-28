@@ -2,7 +2,6 @@ var env = process.env.NODE_ENV || "development"
   , fs = require('fs')
   , async = require('async')
   , path = require('path')
-  , twitter = require('./twitter')
   ;
 
 // Loads hooks/config.[development|production].json with the definition of each hooks
@@ -17,14 +16,12 @@ console.log(">>> "+config.hooks.length+" external hooks loaded");
 var services = {
   hipchat: require('./hipchat'),
   slack: require('./slack'),
+  twitter: require('./twitter'),
   facebook: require('./facebook')
 };
 
 module.exports = function(data, cb) {
   var cb = cb || function() {};
-
-  console.log("Calling hook twitter with ", data);
-  twitter(data);
 
   console.log("Processing "+config.hooks.length+" external hooks");
 
