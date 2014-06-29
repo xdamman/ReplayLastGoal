@@ -102,7 +102,7 @@ server.get('/record', mw.restricted, function(req, res) {
         utils.mp4toJPG(videofilename, Math.floor(duration/2), done); 
       },
       function(done) {
-        utils.mp4toGIF(videofilename, Math.max(2,start), Math.min(13,duration), done); 
+        utils.mp4toGIF(videofilename, Math.max(2,start), Math.min(14,duration), done); 
       }], function(err, results) {
         server.busy = false;
         var data = {
