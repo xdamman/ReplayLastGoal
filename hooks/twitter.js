@@ -18,10 +18,14 @@ var Twitter = function(options) {
   }
 
   return function(data, cb) {
+    var cb = cb || function() {};
     var image = (data.gifsize < 3*1024*1024) ? data.gif : data.thumbnail;
     var tweet = data.text + " " + data.video;
     console.log(humanize.date("Y-m-d H:i:s")+" Sending tweet ("+tweet.length+" chars): ", tweet);
-    sendTweet(tweet, image, cb);
+    sendTweet(tweet, image, function(err, res, body) {
+      console.log(res.statusCode+" Twitter response body: ", body);
+      cb(err);
+    });
   };
 };
 

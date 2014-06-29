@@ -34,6 +34,9 @@ module.exports = function(data, cb) {
     console.log("> Notifying "+h.service+" with options ", h.options);
     var fn = new services[h.service](h.options);
     fn(data, done);
-  }, cb);
+  }, function(e) {
+    if(e) console.log("> Hook error: "+e, e.stack);
+    cb();
+  });
 
 };
