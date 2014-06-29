@@ -2,9 +2,6 @@
   "base_url": "http://replaylastgoal.com",
   "secret": "admin",
   "port": 1212,
-  "hipchat": {
-    "auth_token": ""
-  },
   "videostreams" : { "ned1": "m3u8-url", "ned2": "m3u8-url" },
   "channel": "ned1",
   "twitter": {
