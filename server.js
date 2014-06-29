@@ -20,7 +20,7 @@ var hooks = require('./hooks/index');
 var settings = require('./settings.'+env+'.json');
 
 var server = express();
-var port = process.env.PORT || process.env.NODE_PORT || 1212;
+var port = settings.port || 1212;
 server.set('port', port);
 
 server.recordingWindow = { start: -8, duration: 20 };
@@ -77,10 +77,10 @@ server.get('/record', mw.restricted, function(req, res) {
 
   if(((new Date).getTime() - server.lastRecording.time) < 5000) {
     console.error("Last recording less than 5s ago, aborting");
-    return res.send("Last recording less than 5s ago, aborting"); 
+    return res.send("Last recording less than 5s ago, aborting");
   }
 
-  var channel = req.param('channel', settings.channel); 
+  var channel = req.param('channel', settings.channel);
   var start = req.param('start', server.recordingWindow.start);
   var duration = req.param('duration', server.recordingWindow.duration);
   var text = req.param('text','');
@@ -99,23 +99,23 @@ server.get('/record', mw.restricted, function(req, res) {
     // Generating the thumbnail and animated gif
     async.parallel([
       function(done) {
-        utils.mp4toJPG(videofilename, Math.floor(duration/2), done); 
+        utils.mp4toJPG(videofilename, Math.floor(duration/2), done);
       },
       function(done) {
-        utils.mp4toGIF(videofilename, Math.max(2,start), Math.min(13,duration), done); 
+        utils.mp4toGIF(videofilename, Math.max(2,start), Math.min(13,duration), done);
       }], function(err, results) {
         server.busy = false;
         var data = {
-            id: videoId 
-          , text: text 
+            id: videoId
+          , text: text
           , video: videoUrl
           , videofilename: videofilename
           , thumbnail: videoUrl.replace('video','thumbnail')
-          , gif: settings.base_url+"/videos/"+videoId+".gif" 
+          , gif: settings.base_url+"/videos/"+videoId+".gif"
           , gifsize: fs.statSync('videos/'+videoId+'.gif').size
         }
         server.lastRecording.data = data;
-        try { 
+        try {
           hooks(data);
         } catch(e) {
           console.error("Error in hooks: ", e, e.stack);
@@ -155,7 +155,7 @@ server.get('/gif', mw.requireValidVideoID, function(req, res, next) {
 server.get('/live', mw.restricted, function(req, res) {
   var channel = req.param('channel', settings.channel);
   res.render('live.hbs', {
-    videostream: "/buffer/"+channel+"/livestream.m3u8" // settings.videostreams[channel] 
+    videostream: "/buffer/"+channel+"/livestream.m3u8" // settings.videostreams[channel]
   });
 });
 

@@ -2,7 +2,9 @@
   "hooks": [{
     "service": "slack",
     "options": {
-      "webhookurl": ""
+      "webhookurl": "",
+      "channel": "",
+      "username": ""
     }
   },
   {

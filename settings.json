@@ -5,8 +5,8 @@
   "hipchat": {
     "auth_token": ""
   },
-  "videostreams" : { "channel1": "m3u8-url", "channel2": "m3u8-url" }
-  "channel": "channel1",
+  "videostreams" : { "ned1": "m3u8-url", "ned2": "m3u8-url" },
+  "channel": "ned1",
   "twitter": {
     "consumer_key": "",
     "consumer_secret": "",
