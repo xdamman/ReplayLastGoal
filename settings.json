@@ -1,5 +1,5 @@
 {
-  "base_url": "http://replaylastgoal.com",
+  "base_url": "http://localhost:1212",
   "secret": "admin",
   "port": 1212,
   "videostreams" : { "ned1": "m3u8-url", "ned2": "m3u8-url" },
@@ -9,5 +9,42 @@
     "consumer_secret": "",
     "access_token_key": "",
     "access_token_secret": ""
-  }
+  },
+  "hooks": [
+    {
+      "service": "slack",
+      "active" : false,
+      "options": {
+        "webhookurl": ""
+      }
+    },
+    {
+      "service": "hipchat",
+      "active" : false,
+      "options": {
+        "auth_token": "",
+        "token": "",
+        "room": "World Cup"
+      }
+    },
+    {
+      "service": "facebook",
+      "active" : false,
+      "options": {
+        "page_id" : "",
+        "page_access_token" : ""
+      }
+    },
+    {
+      "service": "twitter",
+      "active" : false,
+      "options": {
+        "username": "ReplayLastGoal",
+        "consumer_key": "",
+        "consumer_secret": "",
+        "token": "",
+        "token_secret": ""
+      }
+    }
+  ]
 }
