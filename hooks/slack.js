@@ -18,10 +18,11 @@ var Slack = function(options) {
     }
 
     slack.send({
-      channel: options.channel || "#general", 
-      icon_url: 'http://replaylastgoal.com/img/avatar.png',
+      channel: options.channel || "#general",
+      icon_url: 'http://i.imgur.com/4gkmsLq.png',
       text: text+" "+data.gif,
       username: options.username || "ReplayLastGoal",
+      unfurl_links: true,
       fields: fields
     }, cb);
   };
