@@ -21,7 +21,7 @@ module.exports = {
 
     console.log("Processing "+settings.hooks.length+" external hooks");
 
-    async.each(settings.hooks, function(h, done) {
+    async.eachLimit(settings.hooks, 8, function(h, done) {
       if(!services[h.service]) {
         console.error("Invalid service "+h.service+", skipping");
         return done();
