@@ -23,7 +23,7 @@
       "active" : false,
       "options": {
         "auth_token": "",
-        "token": "",
+        "room_token": "",
         "room": "World Cup"
       }
     },

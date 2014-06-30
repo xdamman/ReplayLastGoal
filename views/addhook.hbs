@@ -1,0 +1,130 @@
+<div id="addhook">
+
+  <h1>Webhooks</h1>
+
+  <p class="lead">
+    You can add a webhook to automatically receive a notification when a goal is scored along with the animated gif and link to the video replay.
+  </p>
+
+  <form>
+    <div class="row">
+      <label>Type</label>
+      <select name="service">
+        <option value="webhook">webhook</option>
+        <option value="hipchat">Hipchat</option>
+        <option value="slack">Slack</option>
+      </select>
+    </div>
+
+    <div class="row hidden webhook">
+      <label>URL</label>
+      <input type="text" name="webhookurl" placeholder="http://" />
+    </div>
+
+    <div class="row hidden slack">
+      <label>Webhook URL</label>
+      <input type="text" name="webhookurl" placeholder="http://yourcompany.slack.com/services/hooks/incoming-webhook?token=yourtoken" />
+    </div>
+
+    <div class="row slack hidden">
+      <label>Channel</label>
+      <input type="text" name="channel" placeholder="#general" value="#general" />
+    </div>
+
+    <div class="row hidden hipchat">
+      <label>Room</label>
+      <input type="text" name="room" placeholder="room name or id" />
+    </div>
+
+    <div class="row hidden hipchat">
+      <label>Auth token</label>
+      <input type="text" name="auth_token" placeholder="HBde0pDmONnh2mcZWICbwyOj2N4c9SEf3pvQN00Q" />
+    </div>
+
+    <div class="row hidden hipchat">
+      <label>Room token</label>
+      <input type="text" name="room_token" placeholder="nYQNRmtkYjci3KRmFdfCUgwSwdtQZNRJMoommDJm" />
+    </div>
+
+    <div class="row">
+      <br />
+    </div>
+
+    <div class="row center">
+      <input type="button" value="Test" id="test" />
+      <input type="button" value="Save" id="save" />
+    </div>
+
+    <div class="row center">
+      <div class="hidden success"></div>
+      <div class="hidden error"></div>
+    </div>
+
+  </form>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+  (function($) {
+
+    $select = $('select[name="service"]');
+    $save = $('#save').attr('disabled','disabled');
+    $test = $('#test');
+    $success = $('.success');
+    $error = $('.error');
+
+    var getFormData = function() {
+      var options = {};
+      $('input:visible:not([type=button])').each(function() { 
+        options[$(this).attr("name")] = $(this).val(); 
+      });
+      return options;
+    };
+
+    var showForm = function(service) {
+      $('.hidden').hide();
+      $('.'+service).show();
+    };
+
+    var service = $select.val();
+    showForm(service);
+    $select.on('change', function() {
+      service = $select.val();
+      showForm(service);
+    });
+
+
+    $save.click(function() {
+      var data = { service: service, options: getFormData() };
+      $.post("/hooks/save", data, function(res) {
+
+        if(res.error) {
+          $success.hide();
+          return $error.text(res.error).show();
+        }
+
+        $error.hide();
+        $success.text("Hook successfully saved").show();
+      });
+    });
+
+    $test.click(function() {
+
+      var data = { service: service, options: getFormData() };
+
+      $.post("/hooks/test", data, function(res) {
+        if(res.error) {
+          $success.hide();
+          $save.attr('disabled','disabled');
+          return $error.text(res.error).show();
+        }
+
+        $save.removeAttr('disabled');
+        $error.hide();
+        $success.text("Test successfully sent "+new Date).show();
+      });
+
+    });
+
+  })($);
+</script>

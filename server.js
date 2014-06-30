@@ -3,11 +3,13 @@ var BUFFER_DIR = "buffer/";
 
 var fs = require('fs')
   , async = require('async')
+  , md5 = require('MD5')
   , express = require('express')
   , spawn = require('child_process').spawn
   , exec = require('child_process').exec
   , humanize = require('humanize')
   , utils = require('./lib/utils')
+  , _ = require('lodash')
   , mw = require('./lib/middlewares')
   , env = process.env.NODE_ENV || "development"
   ;
@@ -116,12 +118,113 @@ server.get('/record', mw.restricted, function(req, res) {
         }
         server.lastRecording.data = data;
         try {
-          hooks(data);
+          hooks.all(data);
         } catch(e) {
           console.error("Error in hooks: ", e, e.stack);
         }
     });
   });
+});
+
+server.post('/webhook', function(req, res) {
+  console.log("Received webhook: ", req.body);
+  res.send(req.body);
+});
+
+server.post('/hooks/test', function(req, res) {
+
+  var service = req.body.service;
+  var options = req.body.options;
+
+  if(!hooks[service]) {
+    return res.send({code:500, status: "error", error: "Unknown service"});
+  }
+
+  var hook = new hooks[service](options);
+
+  var data = { 
+    id: '2014-06-19-20-31-24',
+    text: 'Goal for Belgium! #ZKO 0-1 #BEL #WorldCup \n📺Video:',
+    video: 'http://replaylastgoal.com/video?v=ned3-2014-06-26-21-35-23',
+    videofilename: 'videos/ned3-2014-06-26-21-35-23.mp4',
+    thumbnail: 'http://replaylastgoal.com/thumbnail?v=ned3-2014-06-26-21-35-23',
+    gif: 'http://replaylastgoal.com/videos/ned3-2014-06-26-21-35-23.gif',
+    gifsize: 1916223
+  };
+
+  console.log("test> Sending data to hook "+service, data);
+
+  hook(data, function(err, result) {
+    if(err) { 
+      console.error(err);
+      return res.send({code:500, status: "error", error: err.toString()});
+    }
+    res.send({code: 200, status: "success", data: data});
+  });
+
+});
+
+server.post('/hooks/save', function(req, res) {
+
+  var service = req.body.service;
+  var options = req.body.options || {};
+
+  if(!hooks[service]) {
+    return res.send({code:500, status: "error", error: "Unknown service"});
+  }
+
+  var hook = {
+    service: service, 
+    options: options, 
+    id: md5(JSON.stringify(options)), 
+    date: new Date(), 
+    active: true
+  };
+
+  if(_.findIndex(settings.hooks, {id:hook.id}) != -1) {
+    return res.send({code: 500, status: "error", error: "Hook already present"})
+  }
+
+  settings.hooks.push(hook);
+
+  try {
+    var json = JSON.stringify(settings,null,2);
+  } catch(e) {
+    console.error("Invalid JSON:", settings);
+    return res.send({code: 500, error: "Invalid JSON"});
+  }
+
+  fs.writeFileSync('./settings.'+env+'.json',json);
+
+  res.send({code: 200, status: "success", hook: hook});
+
+});
+
+server.post('/hooks/remove', function(req, res) {
+  var service = req.body.service;
+  var id = req.body.id;
+
+  if(!settings.hooks[service]) {
+    return res.send({code:500, status: "error", error: "Unknown service"});
+  }
+
+  var hooks = _.filter(settings.hooks, function(hook) {
+    return (hook.id != id);
+  });
+
+  if(hooks.length == settings.hooks.length) {
+    return res.send({code: 404, status: "No such hook found"});
+  }
+
+  settings.hooks = hooks;
+  fs.writeFileSync('./settings.'+env+'.json', JSON.stringify(settings,null,2));
+
+  res.send({code: 200, status: "success"});
+
+});
+
+server.get('/hooks/add', function(req, res) {
+  res.render('addhook');
 });
 
 server.get('/latest.gif', function(req, res) {

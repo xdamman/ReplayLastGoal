@@ -1,6 +1,7 @@
 var VIEWS_DIR = "views/";
 
 var exphbs  = require('express3-handlebars')
+  , bodyParser = require('body-parser')
 
 module.exports = function(server) {
 
@@ -14,5 +15,6 @@ module.exports = function(server) {
   server.set('views', VIEWS_DIR);
   server.set('view engine', 'hbs');
   server.engine('hbs', hbs.engine);
+  server.use(bodyParser.urlencoded({extended:true}))
 
 }

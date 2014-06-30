@@ -9,7 +9,7 @@ var Hipchat = function(options) {
 
     var text = data.text+" "+data.video+" \n"+data.gif;
 
-    hipchatter.notify(options.room || "World Cup", { message: text, token: options.token }, cb); 
+    hipchatter.notify(options.room || "World Cup", { message: text, token: options.room_token }, cb); 
   };
 };
 
