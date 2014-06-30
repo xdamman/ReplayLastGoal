@@ -9,6 +9,7 @@ Automatically create and tweet a video with the latest goal at the world cup.
 
 Just follow [@ReplayLastGoal](https://twitter.com/ReplayLastGoal) on Twitter.
 
+
 ## How does it work?
 
 It connects to a video live stream (that you need to provide) and keeps a buffer of about one minute worth of video. When a given twitter account tweets (by default [@GoalFlash](https://twitter.com/GoalFlash)), it uses the buffer to generate a video of the goal and then tweets it. Videos are saved in the `videos/` directory.
@@ -19,6 +20,11 @@ It connects to a video live stream (that you need to provide) and keeps a buffer
 - Missed a World Cup gooooooooooaaaaalll? A new Twitter bot will catch you up - [NiemanLab](http://www.niemanlab.org/2014/06/missed-a-world-cup-gooooooooooaaaaalll-a-new-twitter-bot-will-catch-you-up/)
 - [Best of the reactions on Twitter](https://storify.com/xdamman/replay-last-goal-reactions)
 - [Reactions to the take down notice from FIFA](https://storify.com/xdamman/replaylastgoal-reactions-to-fifa-takedown-notice)
+
+## Webhooks
+
+You can add webhooks to automatically receive a notification when a goal is scored along with the animated gif and link to the video replay. We support classic webhooks, Hipchat and Slack. Go to 
+http://ReplayLastGoal.com/hooks/add to configure them.
 
 ## Requirements
 
