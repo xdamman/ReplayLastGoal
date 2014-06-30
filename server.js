@@ -55,7 +55,7 @@ server.get('/stop', mw.restricted, function(req, res) {
   }
 });
 
-server.get('/setup', mw.restricted, function(req, res) {
+server.get('/settings', mw.restricted, function(req, res) {
 
   var start = req.param('start', server.recordingWindow.start);
   var duration = req.param('duration', server.recordingWindow.duration);
@@ -63,13 +63,17 @@ server.get('/setup', mw.restricted, function(req, res) {
   if(channel && settings.videostreams[channel] && channel != settings.channel) {
     console.log(humanize.date('Y-m-d H:i:s')+" changing videostream channel to "+channel);
     settings.channel = channel;
-    fs.writeFileSync('./settings.'+env+'.json',JSON.stringify(settings,null,2));
+    utils.saveSettings(settings);
     exec("pm2 restart stream");
   }
   server.recordingWindow.start = start;
   server.recordingWindow.duration = duration;
 
   res.send(server.info());
+});
+
+server.get('/hooks', mw.restricted, function(req, res) {
+  res.send(settings.hooks);
 });
 
 server.get('/record', mw.restricted, function(req, res) {
@@ -152,7 +156,7 @@ server.post('/hooks/test', function(req, res) {
     gifsize: 1916223
   };
 
-  console.log("test> Sending data to hook "+service, data);
+  console.log(humanize.date('Y-m-d H:i:s')+" Sending test data to hook "+service, data);
 
   hook(data, function(err, result) {
     if(err) { 
@@ -164,6 +168,29 @@ server.post('/hooks/test', function(req, res) {
 
 });
 
+server.get('/hooks/activate', function(req, res) {
+
+  var service = req.param('service');
+  var id = req.param('id');
+
+  console.log(humanize.date('Y-m-d H:i:s')+" Activating "+service+" hook "+id);
+
+  if(!hooks[service]) {
+    return res.send({code:500, status: "error", error: "Unknown service"});
+  }
+
+  var index = _.findIndex(settings.hooks, {id: id}); 
+  if(index == -1) {
+    return res.send({code: 404, status: "Not found", error: "We couldn't find any hook with this id"});
+  }
+
+  settings.hooks[index].active = true;
+  settings.hooks[index].date.modified = new Date();
+  utils.saveSettings(settings);
+
+  res.send({code: 200, status: "Hook activated"});
+});
+
 server.post('/hooks/save', function(req, res) {
 
   var service = req.body.service;
@@ -173,36 +200,52 @@ server.post('/hooks/save', function(req, res) {
     return res.send({code:500, status: "error", error: "Unknown service"});
   }
 
-  var hook = {
+  var hookconfig = {
     service: service, 
     options: options, 
-    id: md5(JSON.stringify(options)), 
-    date: new Date(), 
-    active: true
+    id: md5(JSON.stringify(options)+settings.secret), 
+    date: { created: new Date() }, 
+    active: false
   };
 
-  if(_.findIndex(settings.hooks, {id:hook.id}) != -1) {
+  if(_.findIndex(settings.hooks, {id:hookconfig.id}) != -1) {
     return res.send({code: 500, status: "error", error: "Hook already present"})
   }
 
-  settings.hooks.push(hook);
+  var hook = new hooks[service](options);
 
-  try {
-    var json = JSON.stringify(settings,null,2);
-  } catch(e) {
-    console.error("Invalid JSON:", settings);
-    return res.send({code: 500, error: "Invalid JSON"});
-  }
+  var activationUrl = settings.base_url+"/hooks/activate?service="+service+"&id="+hookconfig.id;
+  var removingUrl = settings.base_url+"/hooks/remove?service="+service+"&id="+hookconfig.id;
 
-  fs.writeFileSync('./settings.'+env+'.json',json);
+  var data = { 
+    id: '',
+    text: 'Please click this link to activate your hook: '+activationUrl+'\n\n(You can remove this webhook at anytime by clicking this link: '+removingUrl+' )',
+    video: '',
+    videofilename: '',
+    thumbnail: '',
+    gif: '',
+    gifsize: 0
+  };
 
-  res.send({code: 200, status: "success", hook: hook});
+  console.log(humanize.date('Y-m-d H:i:s')+" test> Sending test data to hook "+service, data);
+
+  hook(data, function(err, result) {
+    if(err) { 
+      console.error(err);
+      return res.send({code:500, status: "error", error: err.toString()});
+    }
+
+    settings.hooks.push(hookconfig);
+    console.log(humanize.date('Y-m-d H:i:s')+" test> Adding new hook", hookconfig);
+    utils.saveSettings(settings);
+    res.send({code: 200, status: "success", hook: hookconfig});
+  });
 
 });
 
-server.post('/hooks/remove', function(req, res) {
-  var service = req.body.service;
-  var id = req.body.id;
+server.get('/hooks/remove', function(req, res) {
+  var service = req.param('service');
+  var id = req.param('id');
 
   if(!settings.hooks[service]) {
     return res.send({code:500, status: "error", error: "Unknown service"});
@@ -217,7 +260,7 @@ server.post('/hooks/remove', function(req, res) {
   }
 
   settings.hooks = hooks;
-  fs.writeFileSync('./settings.'+env+'.json', JSON.stringify(settings,null,2));
+  utils.saveSettings(settings);
 
   res.send({code: 200, status: "success"});
 
@@ -236,6 +279,7 @@ server.get('/', function(req, res) {
 });
 
 server.get('/latest', function(req, res) {
+  res.redirect("/video?v="+server.lastRecording.data.id);
 });
 
 server.get('/video', mw.requireValidVideoID, function(req, res, next) {

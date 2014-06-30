@@ -90,6 +90,7 @@
     showForm(service);
     $select.on('change', function() {
       service = $select.val();
+      $save.attr('disabled','disabled');
       showForm(service);
     });
 
