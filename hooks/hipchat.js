@@ -7,8 +7,8 @@ var Hipchat = function(options) {
   return function(data, cb) {
     var cb = cb || function() {};
 
-    var text = data.text+" "+data.video+" \n"+data.gif;
-
+    var text = data.text+" "+data.video+" "+data.gif;
+    text = text.replace(/\n/g,' ');
     hipchatter.notify(options.room || "World Cup", { message: text, token: options.room_token, message_format: 'text' }, cb); 
   };
 };
