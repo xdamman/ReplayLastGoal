@@ -8,7 +8,7 @@
 
   <form>
     <div class="row">
-      <label>Type</label>
+      <label>Service</label>
       <select name="service">
         <option value="webhook">webhook</option>
         <option value="hipchat">Hipchat</option>
@@ -24,6 +24,7 @@
     <div class="row hidden slack">
       <label>Webhook URL</label>
       <input type="text" name="webhookurl" placeholder="http://yourcompany.slack.com/services/hooks/incoming-webhook?token=yourtoken" />
+      <a href="https://my.slack.com/services/new/incoming-webhook" target="_blank">You can get that webhook url from this page</a>.
     </div>
 
     <div class="row slack hidden">
