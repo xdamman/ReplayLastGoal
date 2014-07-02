@@ -12,7 +12,8 @@ var services = {
   hipchat: require('./hipchat'),
   slack: require('./slack'),
   twitter: require('./twitter'),
-  facebook: require('./facebook')
+  facebook: require('./facebook'),
+  flowdock: require('./flowdock')
 };
 
 module.exports = {
@@ -39,6 +40,7 @@ module.exports = {
   },
   twitter: services.twitter,
   facebook: services.facebook,
+  flowdock: services.flowdock,
   webhook: services.webhook,
   hipchat: services.hipchat,
   slack: services.slack

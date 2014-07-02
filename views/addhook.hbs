@@ -13,6 +13,7 @@
         <option value="webhook">webhook</option>
         <option value="hipchat">Hipchat</option>
         <option value="slack">Slack</option>
+        <option value="flowdock">Flowdock</option>
       </select>
     </div>
 
@@ -45,6 +46,17 @@
     <div class="row hidden hipchat">
       <label>Room token</label>
       <input type="text" name="room_token" placeholder="nYQNRmtkYjci3KRmFdfCUgwSwdtQZNRJMoommDJm" />
+    </div>
+
+    <div class="row hidden flowdock">
+      <label>API Token</label>
+      <input type="text" name="api_token" placeholder="nYQNRmtkYjci3KRmFdfCUgwSwdtQZNRJMoommDJm" />
+      <a href="https://www.flowdock.com/account/tokens" target="_blank">You can get your API token from this page</a>.
+    </div>
+
+    <div class="row hidden flowdock">
+      <label>Email Address Of Sender</label>
+      <input type="text" name="from_address" placeholder="youremail@yourdomain.com" />
     </div>
 
     <div class="row">
