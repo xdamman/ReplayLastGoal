@@ -247,19 +247,19 @@ server.get('/hooks/remove', function(req, res) {
   var service = req.param('service');
   var id = req.param('id');
 
-  if(!settings.hooks[service]) {
+  if(!hooks[service]) {
     return res.send({code:500, status: "error", error: "Unknown service"});
   }
 
-  var hooks = _.filter(settings.hooks, function(hook) {
+  var hooksArray = _.filter(settings.hooks, function(hook) {
     return (hook.id != id);
   });
 
-  if(hooks.length == settings.hooks.length) {
+  if(hooksArray.length == settings.hooks.length) {
     return res.send({code: 404, status: "No such hook found"});
   }
 
-  settings.hooks = hooks;
+  settings.hooks = hooksArray;
   utils.saveSettings(settings);
 
   res.send({code: 200, status: "success"});
