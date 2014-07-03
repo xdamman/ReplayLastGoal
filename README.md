@@ -9,6 +9,13 @@ Automatically create and tweet a video with the latest goal at the world cup.
 
 Just follow [@ReplayLastGoal](https://twitter.com/ReplayLastGoal) on Twitter.
 
+## Webhooks
+
+You can add webhooks to automatically receive a notification when a goal is scored along with the animated gif and a link to the video replay. We support classic webhooks, Hipchat and Slack. Go to 
+http://ReplayLastGoal.com/hooks/add to configure them.
+
+![ReplayLastGoal notification in Slack](http://recordit.co/tzCHgF6TE9.gif)
+
 
 ## How does it work?
 
@@ -21,11 +28,6 @@ It connects to a video live stream (that you need to provide) and keeps a buffer
 - [Best of the reactions on Twitter](https://storify.com/xdamman/replay-last-goal-reactions)
 - [Reactions to the take down notice from FIFA](https://storify.com/xdamman/replaylastgoal-reactions-to-fifa-takedown-notice)
 
-## Webhooks
-
-You can add webhooks to automatically receive a notification when a goal is scored along with the animated gif and link to the video replay. We support classic webhooks, Hipchat and Slack. Go to 
-http://ReplayLastGoal.com/hooks/add to configure them.
-
 ## Requirements
 
 ## A live video stream
@@ -37,7 +39,7 @@ Live streaming works either with Flash which is hard to reverse engineer or with
 
 ## Audio Video Converter
 You need to have [ffmpeg 2.2x](https://ffmpeg.org/) installed on your machine. On a Mac, it's a piece of cake. Install brew and then do `brew install ffmpeg` and you are done.
-On Ubuntu, it's a pain. [Those instructions](https://gist.github.com/faleev/3435377) should help you.
+On Ubuntu, it's a pain. [This bash script](https://gist.github.com/xdamman/e4f713c8cd1a389a5917) should help you.
 
 
 ## Install
