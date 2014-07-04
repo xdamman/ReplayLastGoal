@@ -1,6 +1,6 @@
 {
   "name": "ReplayLastGoal",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "Automatically creates and tweet a video with the latest goal at the world cup",
   "main": "index.js",
   "scripts": {
