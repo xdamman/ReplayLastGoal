@@ -9,6 +9,7 @@ var fs = require('fs')
   , humanize = require('humanize')
   , utils = require('./lib/utils')
   , env = process.env.NODE_ENV || "development"
+  , getStreamURL = require('./getStreamURL')
   ;
 
 var settings = require('./settings.'+env+'.json');
@@ -25,11 +26,8 @@ var logs = {
   }
 }
 
-
-var streamurl = videostreams[channel];
-
-var startStreaming = function() { 
-  var params = ['-i',streamurl,'-c','copy',path.join(BUFFER_DIR,channel,FILENAME+'.m3u8')];
+var startStreaming = function(streamurl) { 
+  var params = ['-i',streamurl,'-acodec','libfaac','-vcodec','libx264','-vf','scale=320:240','-b:v','180k','-profile:v','high',path.join(BUFFER_DIR,channel,FILENAME+'.m3u8')];
   var stream = spawn('ffmpeg', params);
   stream.stdout.pipe(logs.ffmpeg.out);
   stream.stderr.pipe(logs.ffmpeg.err);
@@ -44,7 +42,9 @@ var startStreaming = function() {
 exec('killall ffmpeg', function(err, stdout, stderr) {
   utils.cleanDirectory(path.join(BUFFER_DIR,channel),0);
   // We start streaming
-  setTimeout(startStreaming, 200);
+  getStreamURL(function(err, streamurl) {
+    startStreaming(streamurl);
+  });
 });
 
 // We only keep the latest segments

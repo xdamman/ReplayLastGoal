@@ -25,7 +25,7 @@ var server = express();
 var port = settings.port || 1212;
 server.set('port', port);
 
-server.recordingWindow = { start: -8, duration: 20 };
+server.recordingWindow = { start: -14, duration: 25 };
 
 require('./config/express')(server);
 
@@ -45,6 +45,11 @@ server.get('/start', mw.restricted, function(req, res) {
     exec("pm2 restart stream-"+channel);
     return res.send("Running pm2 restart stream-"+channel);
   }
+});
+
+server.get('/restart', mw.restricted, function(req, res) {
+  exec("pm2 restart server");
+  return res.send("Running pm2 restart server");
 });
 
 server.get('/stop', mw.restricted, function(req, res) {
@@ -184,9 +189,11 @@ server.get('/hooks/activate', function(req, res) {
     return res.send({code: 404, status: "Not found", error: "We couldn't find any hook with this id"});
   }
 
-  settings.hooks[index].active = true;
-  settings.hooks[index].date.modified = new Date();
-  utils.saveSettings(settings);
+  if(!settings.hooks[index].active) {
+    settings.hooks[index].active = true;
+    settings.hooks[index].date.modified = new Date();
+    utils.saveSettings(settings);
+  }
 
   res.send({code: 200, status: "Hook activated"});
 });
@@ -238,6 +245,7 @@ server.post('/hooks/save', function(req, res) {
     settings.hooks.push(hookconfig);
     console.log(humanize.date('Y-m-d H:i:s')+" test> Adding new hook", hookconfig);
     utils.saveSettings(settings);
+    utils.addHook(hookconfig);
     res.send({code: 200, status: "success", hook: hookconfig});
   });
 
