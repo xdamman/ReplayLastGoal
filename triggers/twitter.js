@@ -2,7 +2,7 @@
 var RECORD_URL_QUERY = "?window=default";
 var TWITTER_USERNAME = "GoalUpdatesLive";
 var TWITTER_QUERY = "goal #GER #ITA";
-var THRESHOLD_TWEETS_PER_SECOND = 10;
+var THRESHOLD_TWEETS_PER_SECOND = 7;
 // var TWITTER_USERNAME = "xdamman_test";
 
 var twitter = require('twitter')
@@ -13,11 +13,12 @@ var twitter = require('twitter')
   ;
 
 var twit = new twitter(settings.twitter);
+var tweet = {};
 
 var makeMessage = function(tweet) {
-  tweet = "https://twitter.com/" + tweet.user.screen_name + "/statuses/" + tweet.id_str;
-  tweet += " \n📺HD Video:"; // 14 chars long
-  return tweet;
+  var text = "https://twitter.com/" + tweet.user.screen_name + "/statuses/" + tweet.id_str;
+  text += " \n📺HD Video:"; // 14 chars long
+  return text;
 };
 
 var previous_tps = 0;
@@ -56,11 +57,12 @@ setInterval(function() {
 console.log(humanize.date("Y-m-d H:i:s")+" Connecting to the Twitter Stream for '"+TWITTER_QUERY+"'");
 twit.stream('statuses/filter', {track:TWITTER_QUERY}, function(stream) {
     console.log(humanize.date("Y-m-d H:i:s")+" Connected");
-    stream.on('data', function(tweet) {
+    stream.on('data', function(t) {
       if(!tweet.text) return;
       // console.log(tweet);
       tps++;
       tpm++;
+      tweet = t;
       //console.log(humanize.date("Y-m-d H:i:s")+" tweet.text: ", tweet);
       //if(tweet.user.screen_name != TWITTER_USERNAME) return;
       // If the tweet is just correcting the score, just tweet it without generating a video
