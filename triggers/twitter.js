@@ -58,12 +58,12 @@ console.log(humanize.date("Y-m-d H:i:s")+" Connecting to the Twitter Stream for 
 twit.stream('statuses/filter', {track:TWITTER_QUERY}, function(stream) {
     console.log(humanize.date("Y-m-d H:i:s")+" Connected");
     stream.on('data', function(t) {
-      if(!tweet.text) return;
+      if(!t.text) return;
       // console.log(tweet);
       tps++;
       tpm++;
       tweet = t;
-      //console.log(humanize.date("Y-m-d H:i:s")+" tweet.text: ", tweet);
+      console.log(humanize.date("Y-m-d H:i:s")+" tweet.text: ", tweet.text);
       //if(tweet.user.screen_name != TWITTER_USERNAME) return;
       // If the tweet is just correcting the score, just tweet it without generating a video
     });
